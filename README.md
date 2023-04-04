@@ -1,4 +1,4 @@
-# Multiple Choice Question Generator
+# Multiple Choice Question Generator (MCQGEN)
 
 This project consists of three Python scripts that work together to classify, generate, and write out multiple choice questions based on a set of input documents and learning goals. The scripts use the GPT-3.5-turbo model from the OpenAI API for natural language processing tasks.
 
