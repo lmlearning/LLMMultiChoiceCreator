@@ -1,0 +1,66 @@
+
+
+  Learning Objectives
+
+After completing this unit, you’ll be able to:&nbsp;
+
+  Explain what the command-line interface is.
+  Identify the different shells for each operating system (OS).
+
+
+  Introduction
+
+If you’re new to working in the command-line tool, you’ve landed on the right badge. Developers commonly work in the command-line tool when coding projects such as Lightning Web Components. The text-based interface gives you the ability to enable developer packages with your project seamlessly. In this module, we aim to demystify the command-line tool and give you some commands you can use today. &nbsp;&nbsp;
+Let’s first learn what the command-line tool is.
+
+  Command-Line Interface (CLI)
+
+When you work within a software program or within your Salesforce org, you use the graphic user interface (GUI). A GUI is an interface, comprising of screens, buttons, and a menu (or two). The GUI makes it easy for you to do basic tasks, such as navigation and database updates. You may be surprised to learn that you use a GUI every day!
+The command-line tool is a text-based interface. Instead of buttons or multiple screens, you write commands in the command-line tool, which lets you interact with your computer or software program directly. You may be wondering, if a GUI is user friendly, why do developers need the command-line tool?&nbsp;
+
+  Command-Line Uses
+
+With the command-line interface, you can do complex actions quickly. The command-line interface is also customizable with plug-ins and packages, which gives you the flexibility to customize your development workspace tools. With the command-line tool, you execute scripts, create directories, and interact with tools such as Git where you can build and work on source-driven development projects or CI integrations.&nbsp;
+
+  Where Is the Command-Line Tool?
+
+The operating system (OS) you work on determines where the command-line tool is located. Your OS has a command-line tool included with the machine. Let’s find the tool on your machine.
+macOS/Linux
+The primary command-line tool for macOs and Linux is Terminal. To work with the command-line tool, open the Terminal application.&nbsp;
+
+  Open Finder.
+  In the search field, type Terminal, or click the terminal icon to open the application.
+
+Windows&nbsp;
+The primary command-line tool for Windows is Command Prompt. To work with the command-line tool, open the Command Prompt application.
+
+  Click Start, type command or cmd in the search field and press Enter.
+  Click Command Prompt shortcut to open the tool.
+
+You can also use the terminal window through a code editing tool.
+Code Editor Terminal Window
+Code editors, such as Atom or Visual Studio Code (VS Code), have built-in terminal windows. We recommend using Visual Studio Code (VS Code) terminal window to run commands and work with the Salesforce CLI. The built-in terminal window gives you the ability to code your project and have the terminal window readily available. With a code editor terminal window, like VS Code, you can install packages that give your commands super powers (such as Salesforce Extensions in VS Code).
+
+  What Is a Shell?
+
+The command-line window isn’t just a plain command-line interface where you enter text. Behind the window is a command-line interpreter, or shell, processing the commands you run.&nbsp;
+A shell is a program that interprets and executes the commands entered in the command-line interface. It helps to know what shell you’re using, so you know what commands to enter and which scripting syntax to follow. For this badge, we focus on the default shells for macOS and Windows.
+
+  Different Types of Shells
+
+There are many types of shells that offer different features and functionalities. The most common shell for Windows is PowerShell. The most common shell for macOS is Zsh or z shell. Z shell is a unix shell that extends Bourne shell functionality (also known as BASH shell) with improvements. Let’s learn more about the BASH shell.&nbsp;
+BASH is an acronym that stands for bourne-again shell (bash). A clever play off the name of the predecessor shell, the Bourne shell (sh). Like the predecessor, BASH follows the language and syntax called the Shell Command Language as defined by POSIX. BASH comes with many features and functionalities. Z shell extends BASH functionality. Most developer tools, like npm, integrate with z shell seamlessly. This is why BASH (and now z shell) are the most commonly used shells in developer tutorials. There is also CSH (C Shell), a Unix shell, has a C-like programming syntax with built in arithmetics, and can also execute commands from a text file.
+Each shell has its own syntax and capabilities that let them perform a variety of different tasks. If you don’t have ZSH, with a bit of searching, you can install these shells on your local machine. For now, let’s focus on PowerShell for Windows and ZSH for macOS and Linux.
+
+  Know How PowerShell and ZSH Differ
+
+There is a notable difference between PowerShell (Windows) and ZSH (macOS and Linux). Besides the difference in how the commands are written for each OS, the features and output of each shell also vary. Most notably, ZSH treats outputs as strings such as writing to .txt files. Whereas PowerShell treats the output as objects.
+When the output is a string, it’s often easier for the user to transfer information across programs. This variable output becomes especially important when writing and running scripts or when working with APIs since those are typically in a .txt or format that supports strings. &nbsp;
+The commands throughout this module are written for each OS using the default shells identified above. Next, we go over command structure and practice running commands&nbsp;
+
+  Resources
+
+
+  External Site: The Open Group (Shell Command Language)
+  External Site: npm
+

@@ -1,0 +1,91 @@
+Build an Approval Process
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Set up an approval process that emails the initial approvers.
+Set up an approval process that allows users to approve or reject opportunity records.
+Note
+Accessibility
+This unit requires some additional instructions for screen reader users. To access a detailed screen reader version of this unit, click the link below:
+
+Open Trailhead screen reader instructions.
+
+Create an Email Template
+First create your email template to notify the record owner’s manager that an opportunity has been discounted more than 40%.
+
+From Setup, enter Templates in the Quick Find box, and then select Classic Email Templates.
+Click New Template.
+Select Text as the template type, and click Next.
+Configure the email template.
+Field	Value
+Folder	Unfiled Public Classic Email Templates
+Available for Use	Selected
+Email Template Name	Approve Opportunity Discount
+Encoding	General US & Western Europe
+Subject	Please approve this discounted opportunity
+Email Body	{!User.Manager}, The {!Opportunity.Name} has been discounted. Please approve this discount. Thank you.
+Including the merge field {!Opportunity.Name} helps the approver by providing a link to the opportunity record. This allows them to review the record before responding to the request.
+Click Save.
+Add Custom Fields
+Now let’s create custom fields so that we can track the discount percentage and approval status for each opportunity.
+
+From Setup, enter Object Manager in the Quick Find box, and then select Object Manager.
+Click Opportunity.
+Select Fields & Relationships and click New.
+In the Data Type column, select Percent and then click Next.
+Add a Percent field with these values.
+Field	Value
+Field Label	Discount Percent
+Length	Leave default
+Decimal Places	Leave default
+Required	Selected
+Click Next.
+Click Next.
+Click Save & New.
+In the Data Type column, select Picklist and then click Next.
+Add a Picklist field with these values.
+Field	Value
+Field Label	Discount Percent Status
+Values	Enter values, one value per line
+Picklist Values	Approved
+Not Approved
+Click Next.
+Click Next.
+Click Save.
+Great! You’ve created an email template to notify approvers and you’ve set up an object with the required fields to support your approval process.
+
+Create an Approval Process
+Now that our org is ready, let’s create the approval process.
+
+From Setup, enter Approval in the Quick Find box, and then select Approval Processes.
+In Manage Approval Processes For, select Opportunity.
+Click Create New Approval Process | Use Jump Start Wizard. The Jump Start Wizard helps you create a simple approval process by making some decisions for you.
+Configure the approval process.
+Field	Value
+Name	Approve Opportunity Discount
+Approval Assignment Email Template	Approve Opportunity Discount
+Specify Entry Criteria	Opportunity: Discount Percent greater than 0.4
+Select Approver	Let the submitter choose the approver manually
+Save the approval process.
+Click View Approval Process Detail Page.
+Under Final Approval Actions, click Add New | Field Update, and configure it with these values.
+Field	Value
+Name	Approved
+Field to Update	Discount Percent Status
+A Specific value	Approved
+Click Save.
+Under Final Rejection Actions, click Add New | Field Update, and configure it with these values.
+Field	Value
+Name	Not Approved
+Field to Update	Discount Percent Status
+A Specific value	Not Approved
+Click Save.
+Great job! To start evaluating discounted opportunities, simply activate the approval process.
+
+Make Sure That Records Are Submitted
+You've done a bunch of work to automate what happens when a record gets submitted for approval. Now, when users click Submit for Approval on an opportunity, it goes through your approval process. But what if—the horror—users forget to click the button?
+
+Enter Flow Builder. One of the available actions in the Action element is Submit for Approval, which means you can build a flow that automatically submits a record for approval. And that means your users don’t have to remember to submit opportunities for approval. For example, in a flow that runs when an opportunity is created or edited:
+
+Add a Decision element that checks whether Discount Percent is greater than 0.4.
+Add an Action element, set to Submit for Approval, that submits the opportunity for approval.

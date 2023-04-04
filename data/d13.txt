@@ -1,0 +1,175 @@
+Develop and Test Changes Locally
+
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Create a branch and commit changes to a source control repository.
+Authorize a sandbox using Salesforce Extensions for VS Code.
+Retrieve changes from a sandbox.
+Set Up a Code Repository
+The Zephyrus Relocation Services development team hosts their code and reviews their work in GitHub. Previously, a team member could accidentally overwrite someone’s changes by deploying a change set right over an existing change set. Now they commit changes to the source repository to identify and merge any customization conflicts before they continue.
+
+Important: The main goal of this module is to demonstrate the org development model workflow. This module doesn’t have a hands-on challenge. However, we understand that trailblazers don’t tend to sit on the sidelines. If you try the steps demonstrated in this module, we provide guideposts (notes) when your instructions differ from Ella and Juan’s. Keep your sandboxes for “real” development work. Before you begin, sign up for a Developer Edition org or Trailhead playground to use in place of each sandbox.
+
+Create the Source Control Repository
+The repository is where Juan organizes the source files for the development project. Juan then creates a Salesforce DX project and adds it to the repo.
+
+Name the repo something descriptive to reflect its purpose. Because this in an internal development project, Juan creates a private repository using Zephyrus’s enterprise account called language-courses.
+
+Create a Salesforce DX Project
+Open VS Code.
+From the menu, select View | Command Palette.
+In the command palette search box, enter sfdx project.
+Select SFDX: Create Project with Manifest.
+Use the same name as your GitHub repo, language-courses, then click Enter.
+Click Create Project.
+Add Project Files to the Repo in GitHub
+In VS Code, open the DX project directory, then click the Source Control icon Source Control icon.
+Click Initialize Repository.
+Hover over Changes, then click the + to stage all changes.
+Accept the default branch in which to commit the repo, such as main.
+Enter a commit message, then click the Commit icon, checkmark Commit icon.
+Click Publish Branch.
+Confirm where you want to publish it.
+Create Customizations for New Requirements
+Calvin has met with the Sales team to gather new requirements for the next release. The Sales team wants to be notified when a language course is added or changed, and they want to know who is teaching each course.
+
+Juan thinks this request is a great way for the team to get comfortable with the org development model. Although it can handle far more complex development scenarios, this simple set of steps can help the team understand the model workflow.
+
+Ella’s assignment is to create a custom object for language course instructor and to link it to the course record. Juan creates a trigger that sends a notification email to the Sales team alias. These are the steps:
+
+Clone the Repo
+First, Ella clones the GitHub repo and creates her own branch.
+
+Go to the repo you want to clone, for example, https://github.com/zephyrus/language-courses.
+This repo doesn’t exist. It’s meant for illustrative purposes only. If you plan to follow along, substitute the sample repo you created in these steps. Also, you’ll be simulating the work of two developer personas, Juan and Ella. We suggest creating two separate parent directories to keep their development work separate. For example, if you’re doing Ella’s development work, you clone the repo in an org-dev-ella folder. When you’re doing Juan’s development work, you clone the repo in an org-dev-juan folder.
+Click Clone or download.
+Copy the HTTPS URL.
+From the command palette in VS Code, select Git: Clone.
+In Repository URL, paste the URL to the repo, then click Enter. Ella clones the repo that Juan created: https://github.com/zephyrus/language-courses.git.
+On your local file system, navigate to the place you want to put the GitHub repo, then click Select Repository Location.
+Click Open Repository.
+From the command palette, select Git: Create Branch.
+Enter your branch name. Ella calls her branch ella-custom-object. Now she’s working in her own branch.
+Authorize and Log In to the Sandbox
+Next, Ella authorizes (logs in) to her Developer sandbox using VS Code.
+
+Note
+If you’re following along, use a Developer Edition org or Trailhead Playground. In step 3, select Project Default to use login.salesforce.com as the login URL.
+
+From the command palette search box, enter sfdx authorize.
+Select SFDX: Authorize an Org.
+Select Sandbox for the login URL.
+Enter an alias for the sandbox—for example, dev_sandbox.
+Log in with the sandbox username and password.
+Create the Custom Object
+Then, Ella creates the Language Instructor custom object in her Developer sandbox.
+
+From Setup, click the Object Manager tab.
+Click Create | Custom Object in the top-right corner.
+For Label, enter Language Course Instructor. Notice that the Object Name and Record Name fields auto-fill.
+For Plural Label, enter Language Course Instructors.
+Check the box for Launch New Custom Tab Wizard, then click Save.
+Select your desired tab style (Ella chooses Presenter), and click Next until you can save the object.
+Define the Custom Field
+Next, Ella defines the custom object field on the Language Course object that references the Language Course Instructor object.
+
+Note
+If you’re following along, Ella created the Language Course object in Develop and Test Changes Locally in the Change Set Development Model module. This module assumes this object already exists in Ella’s Developer sandbox. Create this custom object before continuing.
+
+From Setup, go to Object Manager | Language Course.
+Click Fields & Relationships. Notice that some fields are already there, including a name field.
+Click New.
+For data type, select Master-Detail Relationship, then click Next.
+From Related To, select Language Course Instructor, then click Next.
+Fill out the following:
+Field Label: Course Instructor
+Description: Teacher for the language course
+Click Next until you can save the field.
+Track the Changes in a Change List
+Ella creates a change list for the project to capture her changes.
+
+Metadata Entity	Object	Change Type (Create, Update, Delete)	Details
+CustomObject	Language_Course_Instructor__c	Create	Object to capture the name of the person teaching the course
+CustomField	Course_Instructor__c	Create	Master-detail relationship with Language_Course__c custom object
+Retrieve the Changes from the Developer Sandbox
+Ella retrieves the changes from the sandbox to her local DX project. Because Ella tracks her changes along the way, she knows what to retrieve from her Developer sandbox.
+
+Because Ella retrieves only a few components from her sandbox, she decides to use the Terminal in VS Code to run the Salesforce CLI force:source:retrieve command. Based on the default directory specified in the DX project, the CLI places the source in the force-app folder. Because you can’t add an empty folder in GitHub, Ella creates the force-app folder in the DX project on her local file system.
+
+In the DX project on the local file system, create a force-app folder.
+In the VS Code Terminal, run the CLI command to retrieve the new custom object and custom field:
+sfdx force:source:retrieve --metadata CustomObject:Language_Course_Instructor__c,CustomField:Language_Course__c.Course_Instructor__c
+Ella uses --metadata instead of --sourcepath because --sourcepath can retrieve only files that already exist on the file system. The custom object appears in the force-app/main/default/objects directory. In VS Code, the left side shows the new directory structure created after the source:retrieve command: force-app/main/default/objects. The right side shows the Terminal window where the command was run as well as the resulting CLI output.
+Commit the Changes to the Source Control Repository
+Ella commits her changes to the repo, then creates a pull request to inform Juan that her changes are ready to review.
+
+In VS Code, select the Source Control icon Source Control icon.
+Enter a commit comment, then click the Commit icon Commit icon.
+Click Yes to add and commit the files.
+From the VS Code command palette, select Git: Push To.
+Select the origin repository.
+Review the Code
+Note
+If you’re following along, you can skip this section.
+
+Create a pull request. In the GitHub repo, click Compare & pull request.
+Assign reviewers. Ella assigns Juan to review and approve her changes.
+Enter a comment for your reviewers.
+Click Create pull request.
+After Juan reviews and approves the code, Ella merges the pull request. Juan knows that he can begin his trigger work.
+
+Create the Trigger
+The trigger notifies the Sales team when a course is updated or a new course is added. A trigger is a piece of Apex code that executes before or after records of a particular type are inserted, updated, or deleted from the Lightning Platform database.
+
+Juan clones the GitHub repo that contains the new custom object, creating his own branch. Juan creates his trigger and its corresponding test in VS Code.
+
+Deploy the Project Repo to the Developer Sandbox
+First, Juan deploys Ella’s changes to his Developer sandbox so that both their environments are in sync.
+
+Note
+If you’re following along, perform these steps in the folder you created for Juan’s development work, such as org-dev-juan. Use a new Developer Edition org or Trailhead playground for Juan’s Developer sandbox.
+
+Clone the GitHub repo.
+In VS Code, select Git: Create Branch, then provide a name for the branch. Juan names his branch juan_apex_trigger.
+Select SFDX: Authorize an Org.
+Select Sandbox for the login URL (test.salesforce.com).
+Enter an alias for the sandbox—for example, dev_sandbox.
+Log in with the sandbox username and password.
+Deploy Ella’s changes to his developer sandbox. Right-click the objects folder, then select SFDX: Deploy Source to Org. Alternately, Juan can run the Salesforce CLI command in the Terminal.
+sfdx force:source:deploy --metadata CustomObject:Language_Course_Instructor__c, \
+CustomField:Language_Course__c.Course_Instructor__c
+Develop the Trigger
+In the juan_apex_trigger branch in VS Code, create the directory to put the trigger.
+Expand the force-app folder.
+Right click default, then select New Folder.
+Enter triggers.
+Right-click the triggers folder, then click SFDX: Create Apex Trigger.
+Enter LanguageCourseTrigger for the trigger name.Enter the code for the trigger:
+trigger LanguageCourseTrigger on Language_Course__c (after insert, after update, after delete) {
+// <write your own notification code>
+}
+Save the file.
+Create a test for the trigger called TestLanguageCourseTrigger. As a seasoned developer, Juan makes sure that code coverage requirements are met.
+Deploy the Changes to the Developer Sandbox
+Juan deploys the trigger to validate and compile it, and then tests that it’s working correctly with the new object.
+
+In the VS Code Terminal, right-click the triggers folder, then select SFDX: Deploy Source to Org.Alternately, Juan can run the CLI command from the Terminal.
+sfdx force:source:deploy --sourcepath force-app/main/default/triggers
+In VS Code, the left side shows the new directory structure created after the source:deploy command for the trigger: force-app/main/default/triggers. The right side shows the Terminal window where the command was run as well as the resulting CLI output.
+Juan verifies that he captured all the changes and they work in the sandbox.
+Juan adds his changes to the change list.
+Metadata Entity	Object	Change Type (Create, Update, Delete)	Details
+CustomObject	Language_Course_Instructor__c	Create	Object to capture who is teaching the course
+CustomField	Course_Instructor__c	Create	Master-detail relationship with Language_Course__c custom object
+ApexTrigger	LanguageCourseTrigger	Create	Emails Sales team when Language_Course__c object is created, updated, or deleted
+ApexClass	TestLanguageCourseTrigger	Create	Apex test coverage for the trigger
+Commit the Changes to the Source Control Repository
+Juan commits his changes to the repo, then creates a pull request. Ella performs the code review.
+
+Plan the Next Release
+Juan and Ella follow the same process for future customizations. If they develop customizations in VS Code, such as Juan’s trigger work, they deploy them to their Developer sandboxes for validation and testing.
+
+They use Setup for everything else, so they can take advantage of builders and wizards and declarative interfaces. And then they retrieve those changes from the sandbox to their local file systems. They commit their changes to source control, create a pull request, and request a code review before merging their changes to the master branch.
+
+Resources

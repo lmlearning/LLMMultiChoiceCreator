@@ -1,0 +1,226 @@
+
+
+  Learning Objectives
+
+After completing this unit, you’ll be able to:
+
+  Identify uses for record-triggered flows.
+  Give examples of the three types of flow triggers.
+  Based on business requirements, select the best options for your record-triggered flow.
+
+
+  Before You Start
+
+This module is designed for intermediate Salesforce admins who are familiar with basic Salesforce customization features and have some experience using basic flows. If you're not there yet, that’s OK. Before you begin this badge, we recommend that you complete the Flow Basics module. In that badge, you learn when and how to use flows to automate business processes.
+
+  Flow Types
+
+There are three general types of flows.
+
+  
+    
+      
+        Flow Type
+        Launched By
+        Description
+      
+    
+    
+      
+        
+          Screen Flow
+        
+        
+          
+            Quick action
+            Lightning page
+            Experience Cloud site, and more
+          
+        
+        
+          Screen Flows provide a UI that guides users through a business process.
+        
+      
+      
+        
+          Autolaunched Flow
+        
+        
+          
+            Another flow
+            Apex code
+            REST API
+          
+        
+        
+          Autolaunched Flows automate business processes that have no UI. They have no trigger and they run in the background.
+        
+      
+      
+        
+          Triggered Flow
+        
+        
+          
+            Time
+            Data change
+            Platform event
+          
+        
+        
+          Triggered Flows are autolaunched by a trigger you specify. They run in the background.
+        
+      
+    
+  
+
+
+  Tools
+
+You may have used Workflow Rules or Process Builder to create a triggered process. Now Flow Builder is the optimal tool. Why? It combines the capabilities of Workflow Rules and Process Builder in a single point-and-click tool. Use Flow Builder to automate if/then business processes and see a graphical representation of your automation as you build it.&nbsp;
+Flow Builder provides debugging, testing, and integration with functions across the Salesforce Platform. It now combines the capabilities of Workflow Rules and Process Builder with the power of Flow for a single no-code automation home. And if that’s not enough to convince you, a record-triggered flow can update a Salesforce record 10 times faster than a record-change process built with Process Builder!
+
+  Triggered Flows
+
+This module focuses on triggered flows. A triggered flow consists of a trigger, at least one criterion, and at least one action.&nbsp;
+
+  The trigger identifies what launches the flow. You can trigger a flow on a set schedule or when a specific type of record change occurs.
+  Criteria define the specifics of the trigger. The criteria for a schedule trigger are date and time. The criteria for a record change trigger are the object and specific changes to field values.
+  The action determines what the flow does.
+
+
+  Trigger Types
+
+There are three types of triggers.
+
+  
+    
+      
+        Trigger Type
+        When It Runs
+        How to Use It
+      
+    
+    
+      
+        
+          Schedule
+        
+        
+          At a time and frequency you specify
+        
+        
+          Running nightly batch jobs
+        
+      
+      
+        
+          Platform Event
+        
+        
+          When a particular platform event message is received
+        
+        
+          Subscribing to events
+        
+      
+      
+        
+          Record
+        
+        
+          When a record is created, updated, or deleted
+        
+        
+          Updating records and sending notifications
+        
+      
+    
+  
+
+
+  Record-Triggered Flows
+
+A record-triggered flow is the most commonly used automation. It’s the best way to interact with the records in your org. Simply put, the job of a record-triggered flow is, “If something happens, then do something else.”
+For record-triggered flows, the trigger determines which object the flow acts on and when it runs.
+
+  Only when a record is created
+  Anytime a record is updated
+  Anytime a record is created or updated
+  Only when a record is deleted
+
+Create a record-triggered flow to update another record, send a notification, initiate a process, or maintain data consistency. To avoid conflicts and improve performance, you can fine tune the timing of your automation using options within the record-triggered flow.
+Because the flow is triggered when a record has been changed, that change is already on its way to the database. This is often called a transaction, and is referred to as the initial triggering transaction.
+
+  
+    
+      
+        Option
+        When It Runs
+        How to Use It&nbsp;
+      
+    
+    
+      
+        
+          Fast Field Update
+        
+        
+          During the record update that triggered the flow and before that update is saved.
+        
+        
+          Updating the record that triggered the transaction
+          Benefit: Optimal performance because it’s limited to updating the triggering record
+        
+      
+      
+        
+          Related Records and Actions&nbsp;
+        
+        
+          During the record update that triggered the flow and after that update is saved.
+        
+        
+          
+            Creating, updating, or deleting other records
+            Calling subflows
+            Calling actions, such as send email alert or post to Chatter
+          
+          Benefit: Automating common processes triggered by record changes
+        
+      
+      
+        
+          Run Asynchronously
+        
+        
+          Immediately after the record update that triggered the flow is complete.&nbsp;
+        
+        
+          Executing more advanced scenarios like&nbsp;sending requests to external systems or performing other longer running processes
+          Benefit: Avoids slowing down or blocking the record update that triggered the flow
+        
+      
+      
+        
+          Scheduled Paths
+        
+        
+          In the future, after the trigger has fired, based on dates and times.
+        
+        
+          Scheduling reminders or follow-ups based on dates in the record that triggered the flow, such as Close Date
+          Benefit: Waits a specified amount of time between the trigger firing and the automation running
+        
+      
+    
+  
+
+Next you learn how to build a record-triggered flow!
+
+  Resources
+
+
+  Salesforce Architects: Record-Triggered Automation
+  Developer Guide:&nbsp;Triggers and Order of Execution
+

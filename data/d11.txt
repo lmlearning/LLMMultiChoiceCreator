@@ -1,0 +1,124 @@
+Optimize Search Results
+
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Describe how to create efficient text searches that return more targeted search results.
+Describe how to create auto-suggest functionality for searches.
+List more actions that admins can take to enhance search results for users.
+Create Efficient Text Searches
+Search queries can be expensive. The more data you’re searching through and the more results you’re returning, the more you can slow down the entire operation.
+
+How do you combat sluggish searches? With two basic strategies.
+
+Limit which data you’re searching through
+Limit which data you’re returning
+But you don’t want to go too far. If you’re too efficient, the search is less useful. Users don’t like it when they see record not found when they know that the record exists.
+
+Here are our recommendations to create a happy medium. Let’s start with a SOSL example to understand the basic concepts.
+
+To limit which data is searched, use IN SearchGroup. You can search for name, email, phone, sidebar, or all fields. For example, if you want to search only for an email, you search through only email fields.
+
+FIND {jsmith@cloudkicks.com} IN EMAIL FIELDS RETURNING Contact
+Now let’s talk search results. Yes, users think they want to see all the results. But if you have thousands of records, it’s time to reconsider that stance. Think about how you could limit the results or at least break them up into smaller, easier-to-digest chunks.
+
+Again, turning to SOSL, you can use RETURNING FieldSpec to specify which data is returned. We used it in the last unit, but let’s talk about the more advanced elements it includes.
+
+ObjectTypeName—Specifies the object to return.
+FieldList—Specifies the fields to return.
+ORDER By—Specifies which fields to order the results by. You can also specify ascending or descending order.
+LIMIT n—Sets the maximum number of records returned for the given object.
+OFFSET n—Sets the starting row offset into the result set returned by your query.
+That’s a lot to take in. Let’s go through it step-by-step.
+
+Step	Goal	Example
+1	Specify the object to return.	
+FIND {Cloud Kicks} RETURNING Account
+2	Specify the field to return.	
+FIND {Cloud Kicks} RETURNING Account(Name, Industry)
+3	Order the results by field in ascending order, which is the default.	
+FIND {Cloud Kicks} RETURNING Account (Name, Industry ORDER BY Name)
+4	Set the max number of records returned	
+FIND {Cloud Kicks} RETURNING Account (Name, Industry ORDER BY Name LIMIT 10)
+5	Set the starting row offset into the results.	
+FIND {Cloud Kicks} RETURNING Account (Name, Industry ORDER BY Name LIMIT 10 OFFSET 25)
+Now that you’re getting the hang of this, let’s try out some WITH statements, which filter records by certain predefined fields. By prefiltering results, you return fewer results and improve performance. Plus, users don’t need to wade through as many results. What types of WITH filters does SOSL offer? Well, here they are:
+
+Resource	Example
+WITH DIVISION	
+FIND {Cloud Kicks} RETURNING Account (Name, Industry)
+    WITH DIVISION = 'Global'
+WITH DATA CATEGORY 	
+FIND {race} RETURNING KnowledgeArticleVersion
+    (Id, Title WHERE PublishStatus='online' and language='en_US')
+    WITH DATA CATEGORY Location__c AT America__c
+WITH NETWORK	
+FIND {first place} RETURNING User (Id, Name),
+FeedItem (id, ParentId WHERE CreatedDate = THIS_YEAR Order by CreatedDate DESC)
+WITH NETWORK = '00000000000001'
+WITH PRICEBOOK	
+Find {shoe} RETURNING Product2 WITH PricebookId = '01sxx0000002MffAAE'
+Starting to get the picture? Seems like you’re ready to tackle how this works in SOQL. The good news is that it’s pretty much the same. SOQL has similar syntaxes under SELECT that accomplish the same thing as SOSL. The full list of syntaxes, including how to limit by data category or network, is in the developer docs. Here’s a handy comparison table of some of the syntaxes that we discussed.
+
+I want to...	SOSL	SOQL
+Limit the data that is searched	IN SearchGroup	WHERE
+Specify the data to be returned in the response	Returning FieldSpec	SELECT
+Sort results	ORDER BYLIMITOFFSET	ORDER BYLIMITOFFSET
+Filter by data category	WITH DATA CATEGORY	WITH DATA CATEGORY
+Display Suggested Results
+Remember all the way back in the first unit when we talked about record auto-suggestion and the finer art of searching for information about trail running? Let’s revisit that concept in a little more detail.
+
+As a refresher, you can use APIs so that suggestions appear as the user types into the search bar. Suggestions return records that have a title that matches what the user is typing. This feature gets your users to where they want to go faster, which is the whole goal of search, isn’t it?
+
+To take advantage of this feature, here are your go-to REST resources. Each resource has similar syntax and parameters, but use the one that best fits your use case.
+
+Search Suggested Records—Returns a list of suggested records whose names match the user’s search string. The suggestions resource provides a shortcut for users to navigate directly to likely relevant records, before performing a full search.
+Search Suggested Article Title Matches—Returns a list of Salesforce Knowledge articles whose titles match the user’s search query string. Provides a shortcut to navigate directly to likely relevant articles before the user performs a search.
+SObject Suggested Articles for Case—Returns a list of suggested Salesforce Knowledge articles for a case.
+Let’s use the Search Suggested Article Title Matches option as an example of how suggestion works. Here’s the basic syntax, but check out the API docs for the full list of parameters available.
+
+/vXX.X/search/suggestTitleMatches?q=search string&language=article language&publishStatus=article publication status
+Now we use that syntax but with a specific example. The request looks like the following.
+
+/vXX.X/search/suggestTitleMatches?q=race+tips&language=en_US&publishStatus=Online
+And the JSON response.
+
+{
+  "autoSuggestResults" : [ {
+    "attributes" : {
+    "type" : "KnowledgeArticleVersion",
+    "url" : "/services/data/v30.0/sobjects/KnowledgeArticleVersion/ka0D00000004CcQ"
+    },
+  "Id" : "ka0D00000004CcQ",
+  "UrlName" : "tips-for-your-first-trail-race",
+  "Title" : "race tips",
+  "KnowledgeArticleId" : "kA0D00000004Cfz",
+  "isMasterLanguage" : "1",
+  } ],
+  "hasMoreResults" : false
+}
+Work with Admins
+Optimizing search results is a team sport. Luckily, you know the best person for the assist: your MVP admin. Here’s the play for winning some easy points on enhancing search results by working with your admin.
+
+The first step is setting up and optimizing synonym groups, which have words or phrases that are treated equally in searches. A search for one term in a synonym group returns results for all terms in the group. For example, a search for USB returns results for all terms in the synonym group, which contains USB, thumb drive, flash stick, and memory stick. You’re probably seeing the value of synonym groups already. Users can search using one term and still get the results they want even if they don’t use the “right” search term. No renaming of products required.
+
+Creating synonym groups is easy.
+From Setup, enter Synonyms in the Quick Find box, then select Synonyms.
+Under Custom Synonym Groups, click New to start a synonym group or Edit next to an existing group.
+Add two to six synonyms per group. A synonym can be any word or phrase. No special characters.
+Note
+Standard synonym groups, which are provided by Salesforce, are enabled by default.
+
+Have tons of synonyms to import? Take advantage of the metadata API listed in the references section.
+
+Now that you’ve got synonym groups handled, the next step is promoted search terms for Knowledge articles.
+
+Promoted search terms are useful for getting more eyeballs on an article that you know is commonly used to resolve a support issue. Getting it set up is simple. Admins find the perfect article and then add terms to the Promoted Search Terms related list. Users who enter those keywords see the chosen article at the top in search results.
+
+For example, your support team has crafted the absolutely perfect article on how to return shoes that don’t fit. The admin goes in and updates that article to include promoted search terms of return and doesn’t fit. When users search for those terms, the article pops up.
+
+A couple things to help your admin fine-tune promoted search terms.
+
+The maximum number of characters per term is 100. For best results when matching users’ search terms, limit each promoted term to a few keywords.
+Don’t go overboard. For best results, use them selectively, which means create a limited number of promoted terms and a limited number of promoted articles per term. Adding too many promoted search terms could affect the relevance ranking for users, leading to unwanted results. Your organization can create a maximum of 2,000 promoted terms.
+Article search matches a promoted term whenever all keywords within the term occur within the user’s search terms, in any sequence. Each keyword must match exactly.

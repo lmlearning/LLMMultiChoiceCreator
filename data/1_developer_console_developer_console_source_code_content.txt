@@ -1,0 +1,244 @@
+
+
+
+  
+    Learning Objectives
+  
+  
+    After completing this unit, you’ll be able to:
+        Create an Apex class.
+        Execute Apex code.
+        Create a Lightning component.
+        Create a Visualforce page.
+      
+    
+  
+
+
+
+  
+    Create and Execute Apex Code
+  
+  
+    Now that you’ve started to get comfortable with the Developer Console, let’s use it to view, modify, and run the systems powering your spaceship. In other words, let’s get cracking with some code!
+    
+      
+        Create an Apex Class
+      
+      Apex is a Salesforce programming language that you can use to customize business processes in your org. If you like fancy words, you might call Apex a strongly typed, object-oriented language that allows developers to execute flow and transaction-control statements on the Lightning Platform server, in conjunction with calls to the Lightning Platform APIs. Or you can just call it a programming language that looks a lot like Java code and interacts with the data in your org. You use it to add business logic. For example, if you want to alert an account owner when contact information changes, Apex is the answer.
+      To learn more about Apex and how it works, check out the Apex Basics &amp; Database module. For now, don’t worry too much about the code—our goal is to get to know the Developer Console.
+      Say you need to change your flight path to avoid asteroid 2014 QO441. You don’t have time to contact the ground control team to tell them about your course correction. Let’s write some Apex code that sends an email to your Mission Specialist on Earth every time you change your flight path.
+      
+        
+          In the Developer Console, select File | New | Apex Class.
+          When prompted, name your Apex class EmailMissionSpecialist.
+          When the text editor opens, copy and paste the following code into the EmailMissionSpecialist.apxc tab, replacing the tab’s original contents.public class EmailMissionSpecialist {
+   // Public method
+   public void sendMail(String address, String subject, String body) {
+      // Create an email message object
+      Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+      String[] toAddresses = new String[] {address};
+      mail.setToAddresses(toAddresses);
+      mail.setSubject(subject);
+      mail.setPlainTextBody(body);
+      // Pass this email message to the built-in sendEmail method 
+      // of the Messaging class
+      Messaging.SendEmailResult[] results = Messaging.sendEmail(
+                                new Messaging.SingleEmailMessage[] { mail });
+      // Call a helper method to inspect the returned results
+      inspectResults(results);
+   }
+   // Helper method
+   private static Boolean inspectResults(Messaging.SendEmailResult[] results) {
+      Boolean sendResult = true;
+      // sendEmail returns an array of result objects.
+      // Iterate through the list to inspect results. 
+      // In this class, the methods send only one email, 
+      // so we should have only one result.
+      for (Messaging.SendEmailResult res : results) {
+         if (res.isSuccess()) {
+            System.debug('Email sent successfully');
+         }
+         else {
+            sendResult = false;
+            System.debug('The following errors occurred: ' + res.getErrors());                 
+         }
+      }
+      return sendResult;
+   }
+}Copy
+          
+          Save your code using File | Save. The Developer Console checks to make sure that your code doesn’t contain any errors when you save it.Note: If your code isn’t syntactically correct, an error shows up in the Problems tab. You can use the error details to correct your code.
+        
+      
+      If you close this window, you can use the console to open this class or any other saved Apex class. Let’s try that now.
+          To close the EmailMissionSpecialist&nbsp;class, click the ‘X’ next to EmailMissionSpecialist.apxc, at the top of the tab.
+          Select File | Open.
+          In the Entity Type column, click Classes.
+
+          In the Entities column, double-click the class you want to open.
+        
+      
+    
+    
+      
+        Execute an Apex Class
+      
+      Now that you’ve created your Apex class, your next step is to execute it using the Developer Console’s handy Execute Anonymous feature. This feature is a useful tool when you want to test your code and its results.
+      But you have to be careful. All code that you run using this feature affects your org. For instance, if you delete data here, it’s also deleted in your database.
+      
+        
+          Select Debug | Open Execute Anonymous Window. The Enter Apex Code window opens.
+          Copy the following code and paste it into the Enter Apex Code window. EmailMissionSpecialist em = new EmailMissionSpecialist();
+em.sendMail('Enter your email address', 'Flight Path Change', 
+   'Mission Control 123: Your flight path has been changed to avoid collision '
+   + 'with asteroid 2014 QO441.');Copy
+          
+          Replace Enter your email address&nbsp;with your email address.
+          Click Execute, and then check your email to see whether the message was sent successfully.
+        
+      
+      When you receive the email, you know that the communication systems are in working order—and that you’re one step closer to being ready to avoid that asteroid.
+    
+  
+
+
+
+  
+    
+      
+        What Are Lightning Components?
+      
+      Lightning Components is a framework for developing mobile and desktop apps. You can use it to create responsive user interfaces for Lightning Platform apps. Lightning components also make it easier to build apps that work well across mobile and desktop devices.
+      
+        
+          
+            
+              
+              
+                
+                  As of the Spring ‘19 release (API version 45.0), you can build Lightning components using two programming models: the Lightning Web Components model and the original Aura Components model. Lightning web components and Aura components can coexist and interoperate on a page. This content covers Aura components. To learn more about Lightning Web Components, take the Lightning Web Components Basics module.
+                
+              
+            
+          
+        
+      
+      You can use the Developer Console to create Aura components. Using the Developer Console, you can create a component bundle. A component bundle acts like a folder in that it contains components and all other related resources, such as style sheets, controllers, and design.
+      To learn more about Aura components, zip through the nearest wormhole to the Aura Component Basics module. For now, we’ll focus on how to use the Developer Console to create them.
+    
+    
+      
+        Create an Aura Component
+      
+      You’re bound to encounter other humans as you evade asteroid 2014 QO441, and we want them to know you’re friendly so they don’t open fire on you. Fortunately, your ship has large display panels on the sides that are running the Salesforce app. (You knew those would come in handy someday!) Let’s create a component that greets any other spaceship nearby.
+          Select File | New | Lightning Component. The window that pops up prompts you for a name and description.
+          Name your component meetGreet and click Submit. The window also has options to configure your app’s tab, page, record page, and communities page. You can ignore these options. For now, we’re only focusing on writing basic Aura component code.
+          Two tabs are created. Click the one labeled meetGreet.cmp. This file contains the opening and closing tags for Aura components.
+          Between the opening and closing &lt;aura:component&gt; and &lt;/aura:component&gt;tags, copy and paste this line.   &lt;p&gt;Greetings, fellow humans! What’s your status?&lt;/p&gt;Copy
+
+
+          To save the component, select File | Save.
+        
+      
+      Congratulations: You’ve created your first Aura component using the Developer Console! To build it out completely there are a few more steps, but you can delegate that work to a crew member.
+      For now, take a sneak peek at the list on the right-hand side of the window. It includes all the resources in a component bundle that you can use to build your component. If you click any item in the right sidebar, a corresponding resource opens. You can write code in the new resource to build the different parts of the component bundle. For instance, you can use the Style resource to add visual elements to your application and the Helper to add business logic.
+      
+      Here’s how you can open a saved Aura component or any of these resources.
+          Select File | Open Lightning Resources.
+          Type your component’s name in the search box to find your bundle, or select its folder from the list.
+          To see the bundle’s resources, click the arrow next to the folder.
+
+          Select the resource you want to work on, and then click Open Selected.
+        
+      
+    
+  
+
+
+
+  
+    Create Visualforce Pages and Components
+  
+  
+    
+      You’ve learned how to use your console to create Apex code and Aura components. Now it’s time to check out Visualforce.
+      Visualforce is a web development framework for building sophisticated user interfaces for mobile and desktop apps. These interfaces are hosted on the Lightning Platform. Your user interface can look like the standard Salesforce interface, or you can customize it.
+      Now you must be wondering, what’s the difference between Visualforce and Lightning components? Visualforce is page-centric: When you save a record, the Visualforce page interacts with the server and reloads the user interface (UI). The Lightning components framework, in contrast, does much of its work on your device (on the client side, in geek speak). If you want to learn more about the differences between Visualforce and Lightning components, check out the Lightning Experience Development module.
+      If you want to explore the world of Visualforce, check out the Visualforce Basics module.
+      But first, let’s start building a Visualforce page using the Developer Console. Get ready to take the controls!
+    
+    
+      
+        Create a Visualforce Page
+      
+      You have a Flight Systems Checklist that your Control Engineers update every 2 hours, when they perform their engine and fuel tank safety checks. Let’s create a Visualforce page that they can use to report their findings.
+      A functional Flight Systems Checklist page needs to interact with objects that store the values entered by the Control Engineers. But, for now, let’s focus on creating the UI. You can have your underlings create those custom objects.
+      
+        
+          Select File | New | Visualforce Page.
+          Name your page FlightSystemsChecklist.
+          In the text editor, copy and paste the following code.&lt;apex:page sidebar="false"&gt;
+&lt;!--Flight Systems Checklist Visualforce Page--&gt;
+   &lt;h1&gt;Checklist&lt;/h1&gt;
+   &lt;apex:form id="engineReadinessChecklist"&gt;
+      &lt;apex:pageBlock title="Flight Systems Checklist"&gt;
+         &lt;!--First Section--&gt;
+         &lt;apex:pageBlockSection title="Engines"&gt;
+            &lt;!--Adding Checkboxes--&gt;
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 1
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 2
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 3
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 4
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 5
+            &lt;apex:inputCheckbox immediate="true"/&gt;Engine 6
+         &lt;/apex:pageBlockSection&gt;
+         &lt;!--Second Section--&gt;
+         &lt;apex:pageBlockSection title="Fuel Tanks"&gt;
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 1
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 2
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 3
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 4
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 5
+            &lt;apex:inputCheckbox immediate="true"/&gt;Tank 6
+         &lt;/apex:pageBlockSection&gt;
+         &lt;apex:pageBlockButtons&gt;
+            &lt;!--Adding Save Button--&gt;
+            &lt;apex:commandButton value="Save" action="{!save}"/&gt;
+         &lt;/apex:pageBlockButtons&gt;
+      &lt;/apex:pageBlock&gt;
+   &lt;/apex:form&gt;
+&lt;/apex:page&gt;Copy
+          
+          Select File | Save.
+          In the top left corner, click Preview. Your browser opens a preview of your Visualforce page. The Visualforce markup in your page—form, pageBlock, inputCheckbox, and so on—is rendered in the preview.&nbsp;
+
+        
+      
+      Let’s see how you can open a saved Visualforce page.
+          Select File | Open.
+          Under Entity Type, click Pages.
+          Under Entities, double-click the page you want to open.
+        
+      
+    
+    
+      You can create, edit, and customize applications for your org using any or all these methods in the Developer Console. And, so far you’ve stayed out of asteroid 2014 QO441’s path without making any rash decisions that compromise your crew’s safety.
+    
+  
+
+
+
+  
+    Resources
+  
+  
+    
+      
+        Apex Basics &amp; Database Trailhead module
+        Visualforce Basics Trailhead module
+        Lightning Components Basics Trailhead module
+      
+    
+  
+

@@ -1,0 +1,102 @@
+Plan for Changes to Your Org
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Describe how you manage change using the org development model.
+Identify the tools that you need for org development.
+Explain the benefits of using a source control system.
+Calvin’s Journey Continues
+Do you remember Calvin Green from Zephyrus Relocation Services? Using Salesforce, Zephyrus helps customers relocate internationally for their jobs.
+
+As we walk you through how the org development model facilitates team development, we reference the process the team followed for change set development. Before you continue the journey with Calvin and his team, did you already complete the Change Set Development Model module? Go ahead. It’s okay. We’ll be here when you get back.
+
+Meanwhile, Back at Zephyrus Relocation Services
+As you can imagine, Calvin’s world is getting more complex. He’s managing a growing number of requested customizations to their Relocation Services software. When the projects were smaller, Calvin and his colleague, Ella, used change sets to deploy changes.
+
+Zephyrus continues to deliver more options and value to its customers. Calvin and his team need a way to make sure that the Sales team is aware of all the new and exciting product offerings. They can’t offer their clients these great new courses and services if they don’t know about them.
+
+Before they begin work on the next release, Calvin is looking for a process and development lifecycle that scale with this growth. As his team grows, he needs a process that supports multiple contributors developing on the Lightning Platform simultaneously.
+
+Calvin meets with his development team to discuss how they can work more effectively as the team grows. In the past, they’ve encountered challenges with:
+
+Tracking everyone’s changes
+Keeping all the development and testing environments in sync
+Creating and deploying change sets multiple times because of errors and differences among environments
+The new lead developer, Juan Garcia, has been investigating some of the new Salesforce DX tools and development models. He thinks the org development model can help to mitigate some of the pain points they’re experiencing.
+
+Calvin and his growing team in a conference room, sitting around a table.
+Move to Org Development
+With multiple developers and admins contributing to a release, the team agrees they need a new development model. Enter org development, a model that uses some different tools that provide 1) greater flexibility and scalability, 2) new ways to track and manage change, and 3) a different method of deployment.
+
+Juan likes that the org development model uses a source control repository to store changes and project files. A source repo can help to mitigate the pain point of keeping environments in sync. By externalizing the changes for each release, the team knows that the source repo reflects what they are delivering and isn’t affected by environment differences. This consistency ensures a smoother process as they move through the different development, testing, and staging environments.
+
+Similar to change sets, the release artifact is a set of metadata changes to apply to the production org. To ensure they're identifying dependencies from all contributors, the team uses change tracking mechanisms that capture the changes made to components versus changes made directly in the org through the Setup UI.
+
+Juan also suggests that they use the Salesforce Extensions for VS Code to retrieve metadata from their development environments. Then they store the changes they make in the source control system. Once changes are in source control, they can create automated processes for testing and deploying to production.
+
+After several testing and integration cycles, Juan deploys the changes, stored in source control, to production. This process mitigates another pain point: creating and deploying change sets multiple times because of errors and differences between environments.
+
+Prepare the Release Environments
+The team accesses the same development and testing environments they’ve used before. Juan’s team uses sandboxes in each step of the application lifecycle.
+
+Develop and test: Each team member has their own Developer sandbox to create their assigned customization. Developer sandboxes contain no production data.
+Build release: Each team member migrates their customizations from their respective Developer sandboxes to a shared Developer Pro sandbox for integration. Developer Pro sandboxes don’t contain production data, but you can seed them with testing data.
+Test release: For user-acceptance testing, the team uses a partial sandbox to create a complete replica of production (without production data).
+Release: After the release is in production, the team can use the full sandbox to train users without the risk of altering production data. A full sandbox includes a copy of production data.
+The steps in the application development lifecycle: develop and test with Developer sandboxes; integrate with a Developer Pro sandbox; test and validate with a Full sandbox; and release to production. All changes are stored in the source control repository.
+Manage Change Like a Boss
+Calvin and his team use many of the tools they are already familiar with as they begin to follow the org development model. However, some new tools enhance their productivity during specific release stages. They are critical for moving to a more agile team development model.
+
+Salesforce DX Project
+The Salesforce DX project contains the source and files that comprise your changes. A DX project has a specific project structure and source format.
+
+In addition to source files, the project contains a configuration file, sfdx-project.json. This file contains project information and enables you to leverage Salesforce DX tools for many of your development tasks.
+
+A DX project has this structure:
+
+The Salesforce DX project structure files and directories include .sfdx file, .vscode file, config directory, force-app directory (which contains the changes in source format), manifest directory (which contains the package.xml), .forceignore file, and sfdx-project.json file (which is the configuration file for the project).
+You can think of the DX project as your outbound change set, where you’re managing and collecting the changes that you want to send to your production org.
+
+Deployment Artifact (.zip File)
+After testing the changes, Juan creates the deployment artifact, a .zip file that contains changes to deploy. He deploys the release artifact to the Full (staging) sandbox first, and then finally to production. You can think of the deployment artifact as the inbound change set. The changes don’t take effect until they are deployed.
+
+Source Control System
+All changes are merged and stored in a source control system, which contains the Salesforce DX project. A source control system provides several benefits.
+
+Real-time collaboration increases efficiency and drives consensus.
+The team can work on the same files at the same time without fear of overwriting changes or losing work.
+Revision history shows who made which changes.
+You can revert to earlier versions of any file. It’s like having your very own time machine where you can go back and save the universe from destruction.
+When you save work you provide a commit description, which provides historical context for the work.
+Salesforce CLI
+Salesforce CLI is a powerful command-line interface that you can use for every phase of the org development lifecycle. It improves productivity by providing a single interface for all your development, test, and automation use cases. You can:
+
+Authorize sandboxes (headless or web flow)
+Create and manage DX projects
+Import and export test data
+Retrieve and deploy metadata
+Run and automate tests
+Salesforce Extensions for Visual Studio (VS) Code
+Salesforce Extensions for VS Code is built on top of Salesforce CLI and VS Code. Together, they are an integrated development environment that’s created for custom development on Lightning Platform. Best of all, you can run Salesforce CLI commands directly from the command palette or terminal. The development team installs the Salesforce Extension Pack so they can use these VS Code extensions:
+
+Salesforce CLI Integration—interacts with Salesforce CLI to provide core functionality.
+Apex—uses the Apex Language Server to provide features such as syntax highlighting and code completion.
+Apex Replay Debugger—enables VS Code to replay Apex execution from Apex debug logs.
+Aura Components—supports Aura component bundles.
+Visualforce—supports Visualforce pages and components.
+Change Management Mechanisms
+The development team benefits from having some formal change-tracking tools in place, including a team change list, deployment run list, and project management system.
+
+Tool	Description
+Change list	A developer uses this simple list, table, or spreadsheet to track changes they make in their own dev org so they know what to externalize.
+Deployment run list	A developer lists any manual changes required in the org pre- and post-deployment. These changes include metadata that can't be deployed, for example, profile and permission set assignments.
+Project management tools	Tools such as Agile Accelerator and Jira help a team embrace Agile development practices, track business requirements, feature work, and bugs. Project management tools also help a team manage sprints and groom its backlog (future work items).
+Install the Tools
+Juan and Ella both use Salesforce Extensions for VS Code to perform development and testing tasks, and GitHub as their source control system. They complete these steps.
+
+Install Salesforce CLI.
+Install VS Code and Salesforce Extensions for Visual Studio Code.
+Install Git.
+Set up Git.
+Create a GitHub account.
+Because Ella has never used Visual Studio before, she installs the tools, then completes Quick Start: Visual Studio Code for Salesforce Development.

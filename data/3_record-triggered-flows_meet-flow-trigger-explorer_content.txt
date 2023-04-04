@@ -1,0 +1,189 @@
+
+
+  Learning Objectives
+
+After completing this unit, you’ll be able to:
+
+  Use Flow Trigger Explorer to access information about objects and automations.
+  Use Flow Trigger Explorer to change the order in which record-triggered flows run.
+  Use the Time-Based Workflow page to monitor pending actions in individual instances of flows.
+
+Manage your record-triggered flows with Flow Trigger Explorer. This tool is more visual and interactive than the standard Flows list view. With Flow Trigger Explorer, you can select an object to see all of the associated flows that run when a record is created, updated, or deleted, and change the order in which those flows run. This interface allows for easy navigation and ordering of all the flows that run under the same circumstances. You can also view individual flow details and manage versions.
+
+  
+    
+      
+        
+        
+          
+            Flow Trigger Explorer also allows you to see and reorder record-triggered orchestrations. You can even mix the order of record-triggered flows and record-triggered orchestrations! However, this badge focuses on record-triggered flows, so we’ll just focus on those here.
+          
+        
+      
+    
+  
+
+
+  Open Flow Trigger Explorer
+
+In this example, we explore the Closed Won Opportunities flow that we created.
+
+  If it’s not already open, open the Closed Won Opportunities flow.
+
+  At the bottom of the Start element, click Open Flow Trigger Explorer for Opportunity. If the flow were triggered on a different object, that object would be listed instead.
+
+
+  
+    
+      
+        
+        
+          
+            You can also access Flow Trigger Explorer from Object Manager or from the Flows list view. To access from Object Manager, click the object with the flows you want to manage, click Flow Triggers, then click Flow Trigger Explorer. To access from the Flows list view, click Flow Trigger Explorer, next to the New Flow button.
+          
+        
+      
+    
+  
+
+
+  Explore Flow Trigger Explorer
+
+Let’s take a quick tour. In Flow Trigger Explorer, click  and then click Flow Details and Versions. The Flow Details pane opens.
+
+Object/Trigger Manager (1)&nbsp;
+To see flows for a different object, click the down arrow next to Opportunity and select another object. To see flows for a different type of record change, click the down arrow next to Updated and select another trigger: Created, Updated, or Deleted.
+Categorized Flows (2)&nbsp;
+Flow Trigger Explorer lists all record-triggered flows that execute for the selected object and trigger. Flows are grouped by when they run: before the record is saved, after the record is saved, or asynchronously. Within those groups, flows appear in the order in which they run.
+
+  
+    
+      
+        
+        
+          
+            Within the Run Asynchronously group, we can’t guarantee that the flows will run exactly in the order listed. This is unavoidable, due to the nature of how running asynchronously works.
+          
+        
+      
+    
+  
+
+Status and Details Pane (3)&nbsp;
+The Flow Details section displays the flow’s:
+
+  Open Flow button
+  Name and description
+  Version Number
+  Status
+  Last Modified By
+  Process Type
+  Trigger
+
+The Versions section displays all versions of the flow. It also includes an Open button to open the flow in Flow Builder, and an Activate or Deactivate button to manage the flow’s active status.
+
+  Reorder Your Flows
+
+If you have multiple flows that are going to run from the same trigger, you may need one of those flows to run before the others. Perhaps you need one flow to edit a field before another flow uses it, or you want the related records that each flow creates to appear in a certain order. With Flow Trigger Explorer, you can change the order that flows run in without having to open each flow and change their settings.
+To change the order that the flows run:
+
+  Click the Edit Order button in the section you want to reorder.
+  Click and hold &nbsp;next to the flow you want to reorder. Drag it to the place in the flow order that you want this flow to run.
+  Repeat these steps for any other flows you want to reorder in this section. Flow Trigger Explorer highlights each flow you move, so you know what’s going to be changed.
+  Click Update.
+
+
+Keyboard Shortcuts&nbsp;
+You can also use these handy keyboard shortcuts to quickly reorder your flows.
+
+  
+    
+      
+        Action
+
+        Keyboard shortcut
+
+      
+    
+    
+      
+        
+          Switch section focus
+        
+        
+          F6
+        
+      
+      
+        
+          Select flow
+        
+        
+          Spacebar
+        
+      
+      
+        
+          Drop flow
+        
+        
+          Spacebar
+        
+      
+      
+        
+          Move flow
+        
+        
+          Arrow keys
+        
+      
+      
+        
+          Cancel reordering
+        
+        
+          Esc
+        
+      
+    
+  
+
+
+  Monitor Your Record-Triggered Flows
+
+Now you know how to see all the flows that run when a specific trigger happens on a specific type of record. But how do you see individually scheduled instances of a path that runs in the future (such as a path that runs five days after an Opportunity closes)? For that, you use the Time-Based Workflow page.&nbsp;
+
+The Time-Based Workflow shows you individual instances of the flow so you can monitor pending automation. If you activate the Closed Won Opportunities flow, and it’s less than five days after a high value opportunity has closed, that specific automation will be listed here.
+
+  From Setup, in the Quick Find box, enter Time and then select Time-Based Workflow.
+  Click Search to view all pending actions for any active flows.
+  To filter the list of pending actions, define filter criteria (using filter type, operator, and value) and then click Search. The filter types are:
+      Workflow Rule, Flow, or Process Name: Enter the name of the flow.
+      Object: The object that triggered the flow. Enter the object name in the singular form.
+      Scheduled Date: The date the pending action is scheduled to run.
+      Created Date: The date the record that triggered the flow was created.
+      Automation Type: The type of automation that triggered the flow.
+      Created By: The user who created the record that triggered the flow.
+      User ID: The ID of the user who created the record that triggered the flow.
+      Record Name: The name of the record that triggered the flow.
+    
+  
+
+The filter value is not case-sensitive.
+To cancel pending actions:
+
+  Select the pending actions that you want to cancel.
+  Click Delete.
+
+Congratulations! Now you know how to build, manage, and monitor record-triggered flows! Experiment with the Closed Won Opportunities flow by adding more criteria or actions, or create a flow for a different object and explore other options in another record-triggered flow.
+
+  Resources
+
+
+  Salesforce Help:&nbsp;Visualize All Your Record-Triggered Flows in One Place with Flow Trigger Explorer
+  
+Blog Post:&nbsp;Flow Trigger Explorer
+
+  Video:&nbsp;Use Flow Trigger Explorer to Easily View All of Your Record-Triggered Flows
+

@@ -1,0 +1,135 @@
+
+
+
+  
+    Learning Objectives
+  
+  
+    
+After completing this unit, you'll be able to:
+        Write a test for a trigger that fires on a single record operation.
+        Execute all test methods in a class.
+      
+    
+  
+
+
+
+  
+    Test Apex Triggers
+  
+  
+    Before deploying a trigger, write unit tests to perform the actions that fire the trigger and verify expected results.
+    Let’s test a trigger that we worked with in the Apex Triggers module. If an account record has related opportunities, the AccountDeletion trigger prevents the record’s deletion.
+    
+      
+        Prerequisites
+      
+      
+        If you haven’t yet added the AccountDeletiontrigger, follow these steps.
+            In the Developer Console, click File | New | Apex Trigger.
+            Enter AccountDeletion for the trigger name, and then select Account for the sObject. Click Submit.
+            Replace the default code with the following.trigger AccountDeletion on Account (before delete) {
+    // Prevent the deletion of accounts if they have related opportunities.
+    for (Account a : [SELECT Id FROM Account
+                     WHERE Id IN (SELECT AccountId FROM Opportunity) AND
+                     Id IN :Trigger.old]) {
+        Trigger.oldMap.get(a.Id).addError(
+            'Cannot delete account with related opportunities.');
+    }
+}Copy
+            
+          
+        
+        If you added the AccountDeletiontrigger in a previous unit but disabled it so that the system could check your challenge, re-enable it.
+            From Setup, search for Apex Triggers.
+            On the Apex Triggers page, click Edit next to the AccountDeletion trigger.
+            Select Is Active.
+            Click Save.
+          
+        
+        If your org contains triggers from a previous unit called AddRelatedRecord, CalloutTrigger, or HelloWorldTrigger, disable them. For example, to disable the AddRelatedRecordtrigger:
+            From Setup, search for Apex Triggers.
+            On the Apex Triggers page, click Edit next to the AddRelatedRecord trigger.
+            Deselect Is Active.
+            Click Save.
+          
+        
+        To disable the HelloWorldTrigger and CalloutTrigger triggers, repeat the previous steps.
+      
+    
+    
+      
+        Add and Run a Unit Test
+      
+      First, let’s start by adding a test method. This test method verifies what the trigger is designed to do (the positive case): preventing an account from being deleted if it has related opportunities.
+      
+        In the Developer Console, click File | New | Apex Class.
+        Enter TestAccountDeletion for the class name, and then click OK.
+        Replace the default class body with the following.@isTest
+private class TestAccountDeletion {
+    @isTest static void TestDeleteAccountWithOneOpportunity() {
+        // Test data setup
+        // Create an account with an opportunity, and then try to delete it
+        Account acct = new Account(Name='Test Account');
+        insert acct;
+        Opportunity opp = new Opportunity(Name=acct.Name + ' Opportunity',
+                                       StageName='Prospecting',
+                                       CloseDate=System.today().addMonths(1),
+                                       AccountId=acct.Id);
+        insert opp;
+        // Perform test
+        Test.startTest();
+        Database.DeleteResult result = Database.delete(acct, false);
+        Test.stopTest();
+        // Verify 
+        // In this case the deletion should have been stopped by the trigger,
+        // so verify that we got back an error.
+        System.assert(!result.isSuccess());
+        System.assert(result.getErrors().size() &gt; 0);
+        System.assertEquals('Cannot delete account with related opportunities.',
+                             result.getErrors()[0].getMessage());
+    }
+}CopyThe test method first sets up a test account with an opportunity. Next, it deletes the test account, which fires the AccountDeletion trigger. The test method verifies that the trigger prevented the deletion of the test account by checking the return value of the Database.delete() call. The return value is a Database.DeleteResult object that contains information about the delete operation. The test method verifies that the deletion was not successful and verifies the error message obtained.
+        To run this test, click Test | New Run.
+        Under Test Classes, click TestAccountDeletion.
+        To add all the methods in the TestAccountDeletion class to the test run, click Add Selected.
+        Click Run. Find the test result in the Tests tab under the latest run.
+      
+      The TestAccountDeletion test class contains only one test method, which tests for a single account record. Also, this test is for the positive case. Always test for more scenarios to ensure that the trigger works in all cases, including deleting an account without opportunities and bulk account deletions.
+      Test data is set up inside the test method, which can be time-consuming as you add more test methods. If you have many test methods, put test-data creation in a test utility class and call the utility class from multiple test methods. The next unit shows you how to take advantage of a test utility class and add more test methods.
+    
+    
+      
+        Tell Me More
+      
+      The test method contains the Test.startTest() and Test.stopTest() method pair, which delimits a block of code that gets a fresh set of governor limits. In this test, test-data setup uses two DML statements before the test is performed. To test that Apex code runs within governor limits, isolate data setup’s limit usage from your test’s. To isolate the data setup process’s limit usage, enclose the test call within the Test.startTest() and Test.stopTest() block. Also use this test block when testing asynchronous Apex. For more information, see Using Limits, startTest, and stopTest.
+      
+        
+          
+            
+              
+              
+                
+                  A known issue with the Developer Console prevents it from updating code coverage correctly when running a subset of tests. To update your code coverage results, use Test | Run All rather than Test | New Run.
+                
+              
+            
+          
+        
+      
+      
+        Resources
+      
+      
+        
+          
+            Apex Developer Guide: Understanding Testing in Apex
+            Apex Developer Guide: Triggers
+          
+        
+      
+    
+  
+
+

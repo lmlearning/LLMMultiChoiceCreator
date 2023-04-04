@@ -1,0 +1,82 @@
+Choose the Right Search Solution
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Explain when to create a customized search solution.
+Describe the difference between SOSL and SOQL.
+Identify which API protocols are available for search.
+Search, the Salesforce Way
+Do you know what the No. 1 most-used Salesforce feature is? If you said search, you’re right. Search is how users expect to find the one record they want among the thousands of other pieces of data.
+
+In this Trailhead module, you learn a bit about how Salesforce search works and how to determine whether a custom search solution is right for you. You also learn how to jump-start (or rebuild) a custom solution using the Salesforce API for some common use cases. Finally, you learn how to optimize search queries for more targeted, relevant results. In short, you’ll come away with a great understanding of search and how it can help users be more productive.
+
+To get started, let’s discuss how this whole search thing actually works.
+
+All records are stored as data fields in the org’s database. When you update or create a record, the search engine comes along, makes a copy of the data, and breaks up the content into smaller pieces called tokens. We store these tokens in the search index, along with a link back to the original record.
+
+From the user’s perspective, the search process is similar to when a record is created. When users enter a term in the search field (1), the search engine breaks up the search term into tokens (2). It matches those tokens to the record information stored in the search index (3), ranks the associated records by relevance (4), and returns the results that users have access to (5).
+
+Search Index
+
+Let’s take a moment to consider the search index. Why go to all the trouble to make tokens when we could search the org database? Well, the reason is that the search index is super smart about which results to return to the user.
+
+The search index and tokens allow the search engine to apply advanced features like spell correction, nicknames, lemmatization, and synonym groups. All this means we can present records that include variations on the user’s search term to widen the net of results. (Also, in case you were wondering, lemmatization has nothing to do with fuzzy lemmings. It has more to do with identifying and returning variants of the search term, such as add, adding, and added, in search results.)
+
+The search index also provides the opportunity to introduce relevance ranking into the mix. This is how search finds and ranks the records users are looking for. What’s involved? Things like search term frequency, order, and uniqueness; record activity; access permissions; and a handful of other factors. 
+
+Let’s do a comparison. A database search for bunny slippers only returns records with the exact match for bunny slippers. But with the search index, you get records with bunny slippers, yes. But you also see records with similar terms like rabbit slippers or bunny slipper (singular). Plus, let’s say you entered slippers bunny or mis-spelled bunny (it happens). With out-of-order matching and spell check, you still see relevant results. And all the results are ordered by what is relevant to the specific user who performed the search.
+
+Maybe you’re thinking: The out-of-the-box Salesforce search sure sounds great (and it is) and works for most use cases. So, when would you need a custom solution?
+
+In general, you need a custom search solution when your org uses a custom UI instead of the standard Salesforce UI. Examples of home grown UIs are a customer-facing knowledge base or an internal product data site for your employees. Just a word of caution: Building a custom user interface isn’t for everyone and requires extra work. The good news is that a custom search still allows you to take advantage of some of the advanced features of Salesforce search. So, if your company has decided to build a custom UI and needs a custom search, this is the module for you.
+
+Now that we’ve covered Salesforce Search 101, let’s talk about the APIs that let you find records in your custom search solution.
+
+Connect to Search with APIs
+Keep in mind two main APIs. (We talk about two additional APIs a little later.) 
+
+Salesforce Object Query Language (SOQL)
+Salesforce Object Search Language (SOSL)
+Both SOQL and SOSL format text queries in a given API. But that’s where the similarities end. A SOQL query is the equivalent of a SELECT SQL statement and searches the org database. On the other hand, SOSL is a programmatic way of performing a text-based search against the search index. SOSL uses all the great, previously mentioned features of the search index.
+
+SOQL and SOSL also have different syntaxes. We’ve included links to developer docs in the resource section for your reference. But here are some guidelines on when to use SOQL or SOSL.
+
+Use SOQL when you know in which objects or fields the data resides and you want to:
+
+Retrieve data from a single object or from multiple objects that are related to one another.
+Count the number of records that meet specified criteria.
+Sort results as part of the query.
+Retrieve data from number, date, or checkbox fields.
+Use SOSL when you don’t know in which object or field the data resides and you want to:
+
+Retrieve data for a specific term that you know exists within a field. Because SOSL can tokenize multiple terms within a field and build a search index from this, SOSL searches are faster and can return more relevant results.
+Retrieve multiple objects and fields efficiently, and the objects might or might not be related to one another.
+Retrieve data for a particular division in an organization using the divisions feature, and you want to find it in the most efficient way possible.
+Now let’s look at two additional API types. 
+
+First up, suggested records API. Perhaps you already know suggested records by its aliases: auto-suggestion, instant results, or type-ahead. You’re probably familiar with the behavior, too. Let’s say you’re using a website that sells the coolest running shoes available. It uses a customized Salesforce search solution for its knowledge base to encourage a community of runners. You want to know which shoes to buy for trail running. You start typing “trail running” in the search bar, and it presents options for articles that include the search terms in the title. 
+
+The search box knew exactly what you wanted to read!
+
+Search Suggested Records and Search Suggested Articles REST methods are available for you to use to bring your own users the same immediate satisfaction. We show you more about how to use those methods later.
+
+We’ve been talking a lot about how to find records inside Salesforce. But what if you have records stored outside of Salesforce that users access for their jobs? Well, we’ve got a solution for that too: Salesforce Federated Search. It’s the new way for users to search for items stored outside of Salesforce—all while remaining inside Salesforce Classic, Salesforce Console, or Lightning Experience. 
+
+Salesforce Federated Search allows you to make the global search box an external search engine. When Federated Search is set up, we transfer the user’s query to the external engine, which searches the external sources. The results are returned right in the Salesforce search results. We do this through the Salesforce Federated Search connector. The connector is built using the OpenSearch specification, so you can plug in any search engine that conforms to this industry standard.
+
+It’s important to know that Salesforce Federated Search doesn’t go through the Salesforce search index, meaning that all those cool Salesforce advanced features aren’t applied. Instead, results are returned according to the external search provider, which is cool too.
+
+Next, let’s look at how to use protocols to send SOSL and SOQL queries. 
+
+Send Queries with Protocols
+You can write all the beautiful search queries that you want. But they aren’t any good unless you use an API protocol like REST, SOAP, or Apex to actually send them. 
+
+Keep in mind that some protocols get along better with some APIs than others. In general, we talk about queries with SOQL and searches with SOSL.
+
+Query (REST) and query() (SOAP)—Executes a SOQL query against the specified object and returns data that matches the specified criteria.
+Search (REST) and search() (SOAP)—Executes a SOSL text string search against your org’s data.
+More resources to perform other common search tasks, like auto-suggesting records, articles, and queries, are also available. And, if you’d rather not use SOSL or SOQL, consider Parameterized Search in REST. Instead of a search string in the URL, you use parameters (hence the name) in the URL.
+
+As for Apex, you can use SOQL or SOSL on the fly by surrounding the statement in square brackets. You can also use a Search Class to perform dynamic SOSL queries and a Search Namespace for getting search results and suggestion results.
+
+We’ve included a handy list in the resources section of this unit. And we’re going to give you an introduction to using the protocols in the next unit to get you started. Be sure to read up on the developer docs for all the information and examples. 

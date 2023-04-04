@@ -1,0 +1,119 @@
+
+
+  Learning Objectives
+
+After completing this unit, you’ll be able to:
+
+  Identify how to trigger a flow on a schedule.
+  Create a scheduled path to run a record-triggered flow at a specified time.
+
+
+  Automation on a Schedule
+
+By default, a record-triggered flow runs when a record changes in a specified way. But you can delay that automation by using a scheduled path. Actions on a scheduled path are triggered when the specified record change occurs, but run after a period of time. This can be minutes, hours, days, or even months after the record change. They can also be scheduled for a period of time before or after a field on the triggering record. For example:
+
+  6 hours after a case is created
+  2 days after the renewal date for an account
+  1 month before the warranty expiration date
+
+
+  Business Requirement
+
+Let’s expand our opportunity flow to include a new business requirement: Remind the opportunity owner to follow up with the account owner 5 days after the opportunity closes.&nbsp;
+Note the timing “5 days after”. To create that 5-day delay in the flow, we add a scheduled path. In the scheduled path we create a task for the account’s owner.
+
+  Configure Scheduled Paths
+
+
+  Under Flow Definitions, select the Triggered Flows list view.
+  In the Flow Label column, click Closed Won Opportunities. The flow opens.&nbsp;Because we chose Actions and Related Records&nbsp;when we created the original flow, we can add our scheduled path directly in this flow. You can use scheduled paths only when the flow uses the Actions and Related Records option.
+  Click Add Scheduled Paths (Optional).
+
+  For Path Label, enter 5 Days After Close. The API Name field is automatically updated to X5_Days_After_Close.
+  For Time Source, select Opportunity: Close Date.
+  For Offset Number, enter 5.
+  For Offset Options, select Days After.
+  Click Done.
+
+
+  Add a Task
+
+Now let’s add the task to remind the opportunity owner to follow up with the account owner five days after the opportunity closes.
+
+  Below 5 Days After Close, click + to add an element.
+  Scroll to the Data section and click Create Records. The New Create Records window opens.
+
+  For Label, enter Personalized Welcome Task. The API Name is automatically updated to Personalized_Welcome_Task.
+  For Description, enter Creates a task for the Account owner to reach out and welcome a new customer.
+  For How Many Records to Create, keep One&nbsp;selected.
+  For How to Set the Record Fields, select Use separate resources, and literal values.
+  For Object, select Task.
+
+Set Conditions
+
+  Under Set Field Values for the Task, set the task subject:
+      Field: Subject
+
+      Value: Personalized Welcome
+
+    
+  
+  Click Add Field.
+  Describe the task:
+      Field: Description
+
+      Value: Reach out with phone call to welcome new customer
+
+    
+  
+  Click Add Field.
+  Associate the new task with the opportunity that triggered the flow:
+      Field: WhatIdThe WhatId field can refer to the ID of any related non-human object. It represents something other than a person, such as an account, opportunity, campaign, case, or custom object. To refer to a person object, such as contact, use WhoId.
+      Value: $Record &gt; IdRemember, data from the record that triggered the flow is stored in the $Record variable. To reference the record itself, drill down from $Record to the Id field.
+    
+  
+  Click Add Field.
+  Set the owner of the new task to match the owner of the opportunity that triggered the flow:
+      Field: OwnerID
+
+      Value: $Record &gt; Account &gt; OwnerId
+
+    
+  
+  Click Add Field.
+  Set the task due date:
+      Field: Activity Date
+
+      Value: enter today’s date (You usually use a formula resource to dynamically set the activity date to a date in the future, but for simplicity in this module, we use today’s date.)
+    
+  
+  Click Done.
+  Click Save As | A New Version | Save.
+
+Adding the scheduled task is complete! Now let’s test to make sure that it's working properly.
+
+  Debug the flow
+
+
+  Click&nbsp;Debug. The Debug flow window opens.
+
+  For Path for Debug Run, select 5 Days After Close.
+
+  For Debug Options, click Skip start condition requirements.
+  For Run the Flow As If the Record Is, keep Created&nbsp;selected.
+  For Opportunity, select the same organization you used in unit 1 to run the flow against. (This example uses Grand Hotels Emergency Generators.)
+  Click Run.The flow is debugged. If it ran successfully, the line connecting elements is orange.
+  Click Back ( &nbsp;) to exit Flow Builder.
+
+Success! Using both an immediate path and a scheduled path, you’ve created a flow that automatically manages your high-value opportunities.
+
+  Tell Me More
+
+You can expand this flow to include more criteria and actions. If an opportunity doesn’t meet the conditions (greater than 25000 and Closed Won), do something different. For example, check whether a high-value opportunity is Closed Lost. If it is, automate different actions. But don’t stop there. What record-triggered flows can you build on other objects?
+
+  Resources
+
+
+  Salesforce Architects:&nbsp;Record-Triggered Automation
+  Developer Guide:&nbsp;Triggers and Order of Execution
+

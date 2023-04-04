@@ -1,0 +1,108 @@
+
+
+
+  
+    Learning Objectives
+  
+  
+    After completing this unit, you’ll know: 
+      
+        How to monitor the different types of jobs.
+        How to use the flex queue.
+      
+    
+  
+
+
+
+  
+    Follow Along with Trail Together
+  
+  Want to follow along with an instructor as you work through this step? Take a look at this video, part of the Trail Together series on Trailhead Live.
+
+  (This clip starts at the 1:25:18 minute mark, in case you want to rewind and watch the beginning of the step again.)
+  
+    Monitoring Asynchronous Jobs
+  
+  
+    The great thing about async jobs is that they work silently in the background. The tough thing about async jobs is that they work silently in the background. Luckily there are a few ways to monitor what is going on with your jobs under the covers.
+    You can monitor the status of all jobs in the Salesforce user interface. From Setup, enter Jobs in the Quick Find box, then select Apex Jobs.
+    The Apex Jobs page shows all asynchronous Apex jobs with information about each job’s execution. The following screenshot shows one future method job and two completed batch jobs for the same Batch Apex class.
+    
+    If you have many batch jobs, use the Batch Jobs page to view only batch jobs. To open the Apex Batch Jobs page, click the link at the top of the Apex Jobs page. Use the slider in the Apex Batch Jobs page to select a specific date range and narrow down the list of batch jobs displayed. You can view past jobs that haven’t been deleted yet. The Batch Jobs page groups jobs by the batch class.
+    
+    Click More Info next to a class ID you’re interested in to find out details about the jobs executed for that class. This image shows the popup that displays after clicking More Info. This batch class has two jobs that executed successfully.
+    
+    You can also monitor the status of Apex jobs in the Apex Flex Queue, and reorder them to control which jobs are processed first. From Setup, enter Jobs in the Quick Find box, then select Apex Flex Queue.
+    
+      
+        Monitoring Future Jobs
+      
+      Future jobs show up on the Apex Jobs page like any other jobs. However, future jobs are not part of the flex queue currently.
+      You can query AsyncApexJob to find your future job, but there’s a caveat. Since kicking off a future job does not return an ID, you have to filter on some other field such as MethodName, or JobType, to find your job. There are a few sample SOQL queries in this Stack Exchange post&nbsp; that might help.
+    
+    
+      
+        Monitoring Queued Jobs with SOQL
+      
+      To query information about your submitted job, perform a SOQL query on AsyncApexJob by filtering on the job ID that the System.enqueueJob() method returns.
+      
+AsyncApexJob jobInfo = [SELECT Status, NumberOfErrors
+    FROM AsyncApexJob WHERE Id = :jobID];Copy
+      
+    
+    
+      
+        Monitoring Queue Jobs with the Flex Queue
+      
+      The Apex Flex queue enables you to submit up to 100 batch jobs for execution. Any jobs that are submitted for execution are in holding status and are placed in the Apex Flex queue. Up to 100 batch jobs can be in the holding status.
+      Jobs are processed first-in first-out—in the order in which they’re submitted. You can look at the current queue order and shuffle the queue, so that you could move an important job to the front, or less important ones to the back.
+      When system resources become available, the system picks up the next job from the top of the Apex Flex queue and moves it to the batch job queue. The system can process up to five queued or active jobs simultaneously for each organization. The status of these moved jobs changes from Holding to Queued. Queued jobs get executed when the system is ready to process new jobs. Like other jobs, you can monitor queued jobs in the Apex Jobs page.
+    
+    
+      
+        Monitoring Scheduled Jobs
+      
+      After an Apex job has been scheduled, you can obtain more information about it by running a SOQL query on CronTrigger. The following sample queries the number of times the job has run, and the date and time when the job is scheduled to run again. It uses a jobID variable which is returned from the System.schedule() method.
+      
+CronTrigger ct = [SELECT TimesTriggered, NextFireTime FROM CronTrigger WHERE Id = :jobID];Copy
+      
+      If you’re performing this query inside the execute method of your schedulable class, you can obtain the ID of the current job by calling getTriggerId() on the SchedulableContext argument variable.
+      
+public class DoAwesomeStuff implements Schedulable {
+    public void execute(SchedulableContext sc) {
+        // some awesome code
+        CronTrigger ct = [SELECT TimesTriggered, NextFireTime FROM CronTrigger WHERE Id = :sc.getTriggerId()];
+    }
+}Copy
+      
+      You can also get the job’s name and the job’s type from the CronJobDetail record associated with the CronTrigger record. To do so, use the CronJobDetail relationship when performing a query on CronTrigger. This example retrieves the most recent CronTrigger record with the job name and type from CronJobDetail.
+      
+CronTrigger job = [SELECT Id, CronJobDetail.Id, CronJobDetail.Name, CronJobDetail.JobType FROM CronTrigger ORDER BY CreatedDate DESC LIMIT 1];Copy
+      
+      Alternatively, you can query CronJobDetail directly to get the job’s name and type. The following example gets the job’s name and type for the CronTrigger record queried in the previous example. The corresponding CronJobDetail record ID is obtained by the CronJobDetail.Id expression on the CronTrigger record.
+      
+CronJobDetail ctd = [SELECT Id, Name, JobType FROM CronJobDetail WHERE Id = :job.CronJobDetail.Id];Copy
+      
+      And lastly, to obtain the total count of all Apex scheduled jobs, excluding all other scheduled job types, perform the following query. Note the value '7' is specified for the job type, which corresponds to the scheduled Apex job type. See CronJobDetail in the Resources section for a list of all types.
+      
+SELECT COUNT() FROM CronTrigger WHERE CronJobDetail.JobType = '7’Copy
+      
+    
+  
+
+
+
+  
+    Resources
+  
+  
+    
+
+      
+        Object Reference: CronJobDetail
+      
+    
+  
+
+

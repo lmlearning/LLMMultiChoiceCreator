@@ -1,0 +1,143 @@
+
+
+
+  
+    Learning Objectives
+  
+  
+    After completing this unit, you’ll be able to:
+        Execute a SOQL query using the Query Editor or in Apex code.
+        Execute a SOSL search using the Query Editor or in Apex code.
+      
+    
+  
+
+
+
+  
+    
+      
+        What Is a SOQL Query?
+      
+      SOQL stands for Salesforce Object Query Language. You can use SOQL to read information stored in your org’s database. SOQL is syntactically similar to SQL (Structured Query Language).
+      You can write and execute a SOQL query in Apex code or in the Developer Console’s Query Editor.
+    
+    
+      
+        Execute a SOQL Query
+      
+      Before we start writing and executing queries, you need some data in your Salesforce org that we can search for. Let’s add the contact details of three Control Engineers sent by Mission Control to guide your spaceship away from asteroid 2014 QO441.
+          Select Debug | Open Execute Anonymous Window.
+          Copy the following code, paste it, and execute it. This code adds the contact details of three Control Engineers to the Contact object in your database.// Add first contact and related details
+Contact contact1 = new Contact(
+   Firstname='Quentin',
+   Lastname='Foam',
+   Phone='(415)555-1212',
+   Department= 'Specialty Crisis Management',
+   Title='Control Engineer - Specialty - Solar Arrays',
+   Email='qfoam@trailhead.com');
+insert contact1;
+// Add second contact and related details
+Contact contact2 = new Contact(
+   Firstname='Vega',
+   Lastname='North',
+   Phone='(416)556-1312',
+   Department= 'Specialty Crisis Management',
+   Title='Control Engineer - Specialty - Propulsion',
+   Email='vnorth@trailhead.com');
+insert contact2;
+// Add third contact and related details
+Contact contact3 = new Contact(
+   Firstname='Palma',
+   Lastname='Sunrise',
+   Phone='(554)623-1212',
+   Department= 'Specialty Crisis Management',
+   Title='Control Engineer - Specialty - Radiators',
+   Email='psunrise@trailhead.com');
+insert contact3;CopyNow we can use the Query Editor to write and execute a SOQL query to find these Control Engineers. SOQL queries search for data in specific objects. You can add an optional condition in the WHERE clause to narrow down your search.
+          Enter the following query in the Query Editor tab.SELECT Name, Phone, Email, Title FROM Contact
+                                 WHERE (Department = 'Specialty Crisis Management')Copy
+          
+          Click Execute.
+        
+      
+      The results display the details of the contacts who work in the Specialty Crisis Management department.
+      
+      You can use another SOQL query to find contacts in other departments, or to see whether anyone else has created records for more Control Engineers. To rerun a query, click Refresh Grid in the Query Results panel.
+      A SOQL query that you execute using Apex code is called an inline SOQL query. Let’s see how you can use the Developer Console to search for contacts working in the Specialty Crisis Management department using an inline SOQL query.
+      This time, let’s also try ordering the results alphabetically by name.
+          Select Debug | Open Execute Anonymous Window.
+          Enter the following code.Contact[] theseContacts = [SELECT Name, Phone, Email, Description FROM Contact
+                           WHERE (Department='Specialty Crisis Management')
+                           ORDER BY Name];
+// Log a count of how many contacts were found
+System.debug(theseContacts.size() + ' contact(s) returned.');
+// Log all values in the array of contacts
+System.debug(theseContacts);Copy
+          
+          After the code has executed, open the log.
+          To view only the USER_DEBUG messages, select Debug Only. The results show the number of accounts returned and the contact details in alphabetical order.
+        
+      
+      To delve deeper into SOQL queries, check out the Apex Basics &amp; Database module.
+    
+  
+
+
+
+  
+    
+      
+        What Is a SOSL Search?
+      
+      SOSL (Salesforce Object Search Language) is a language that performs text searches in records. Unlike SOQL, SOSL can query multiple types of objects at the same time. SOSL can also use a word match to match fields, while SOQL needs the exact phrase.
+      When you run a SOSL search for contact records using the word “Crisis,” your search looks through all contact fields and returns any record containing that word. But if you try the same in a SOQL query, you need to specify the fields to search and a complete word or phrase to search for. You can also use LIKE or wildcards to narrow down SOQL or SOSL searches.
+    
+    
+      
+        Execute a SOSL Search
+      
+      
+        
+          In the Query Editor tab, enter the following SOSL query. Notice that only the partial name of the department Specialty Crisis Management is included in the query.FIND {Crisis} IN ALL FIELDS RETURNING Contact(FirstName, LastName, Phone, Email, Title)Copy
+          
+          Execute the query, and then observe the results in the Search Results pane.&nbsp;
+
+        
+      
+      As you did with the SOQL queries, you can execute SOSL searches within Apex code.
+          Select Debug | Open Execute Anonymous Window.
+          Execute the following code.List&lt;List&lt;sObject&gt;&gt; searchList = [FIND 'Crisis' IN ALL FIELDS 
+                                  RETURNING Contact(FirstName, LastName,
+                                  Phone, Email, Description)];
+Contact[] searchContacts = (Contact[])searchList[0];
+System.debug('Found the following contacts:');
+for (Contact c : searchContacts) {
+   System.debug(c.LastName + ', ' + c.FirstName);
+}Copy
+          
+          Open the log, and select the Debug Only option.
+        
+      
+      The Execution Log lists the names of the Control Engineers.
+      To learn more about what makes SOSL searches tick, check out the Apex Basics &amp; Database module.
+    
+    
+      While you were playing with SOQL and SOSL, the Control Engineers whose records you were looking up steered your spaceship out of the asteroid’s path. It turns out that commanding a spaceship isn’t so hard after all: You just need to have a good console, and to learn to delegate!
+      Now that you have avoided a collision with asteroid 2014 QO441, you decide to land at the Neptune Space Station to take a well-deserved break. With the knowledge of the various functions and features of the Developer Console, you can steer your org through many missions with success.
+    
+  
+
+
+
+  
+    Resources
+  
+  
+    
+      
+        Apex Basics &amp; Database Trailhead module
+      
+    
+  
+

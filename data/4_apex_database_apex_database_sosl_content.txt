@@ -1,0 +1,231 @@
+
+
+
+  
+    Learning Objectives
+  
+  
+    
+After completing this unit, you'll be able to:
+        Describe the differences between SOSL and SOQL.
+        Search for fields across multiple objects using SOSL queries.
+        Execute SOSL queries by using the Query Editor in the Developer Console.
+      
+    
+  
+
+
+
+  
+    Get Started with SOSL
+  
+  
+    
+      Salesforce Object Search Language (SOSL) is a Salesforce search language that is used to perform text searches in records. Use SOSL to search fields across multiple standard and custom object records in Salesforce. SOSL is similar to Apache Lucene.
+      
+      Adding SOSL queries to Apex is simple—you can embed SOSL queries directly in your Apex code. When SOSL is embedded in Apex, it is referred to as inline SOSL
+
+      
+      This is an example of a SOSL query that searches for accounts and contacts that have any fields with the word 'SFDC'.
+    
+List&lt;List&lt;SObject&gt;&gt; searchList = [FIND 'SFDC' IN ALL FIELDS 
+                                      RETURNING Account(Name), Contact(FirstName,LastName)];Copy
+    
+      Differences and Similarities Between SOQL and SOSL
+      Like SOQL, SOSL allows you to search your organization’s records for specific information. Unlike SOQL, which can only query one standard or custom object at a time, a single SOSL query can search all objects.
+      Another difference is that SOSL matches fields based on a word match while SOQL performs an exact match by default (when not using wildcards). For example, searching for 'Digital' in SOSL returns records whose field values are 'Digital' or 'The Digital Company', but SOQL returns only records with field values of 'Digital'.
+      SOQL and SOSL are two separate languages with different syntax. Each language has a distinct use case:
+      
+        Use SOQL to retrieve records for a single object.
+        Use SOSL to search fields across multiple objects. SOSL queries can search most text fields on an object.
+      
+    
+    
+      Prerequisites
+      Some queries in this unit expect the org to have accounts and contacts. If you haven’t created the sample data in the SOQL unit, create sample data in this unit. Otherwise, you can skip creating the sample data in this section.
+      
+        In the Developer Console, open the Execute Anonymous window from the Debug menu.
+        Insert the below snippet in the window and click Execute.
+      
+      
+// Add account and related contact
+Account acct = new Account(
+    Name='SFDC Computing',
+    Phone='(415)555-1212',
+    NumberOfEmployees=50,
+    BillingCity='San Francisco');
+insert acct;
+// Once the account is inserted, the sObject will be 
+// populated with an ID.
+// Get this ID.
+ID acctID = acct.ID;
+// Add a contact to this account.
+Contact con = new Contact(
+    FirstName='Carol',
+    LastName='Ruiz',
+    Phone='(415)555-1212',
+    Department='Wingo',
+    AccountId=acctID);
+insert con;
+// Add account with no contact
+Account acct2 = new Account(
+    Name='The SFDC Query Man',
+    Phone='(310)555-1213',
+    NumberOfEmployees=50,
+    BillingCity='Los Angeles',
+    Description='Expert in wing technologies.');
+insert acct2;Copy
+      
+    
+    
+      Use the Query Editor
+      The Developer Console provides the Query Editor console, which enables you to run SOSL queries and view results. The Query Editor provides a quick way to inspect the database. It is a good way to test your SOSL queries before adding them to your Apex code. When you use the Query Editor, you need to supply only the SOSL statement without the Apex code that surrounds it.
+      Let’s try running the following SOSL example:
+      
+        In the Developer Console, click the Query Editor&nbsp; tab.
+        Copy and paste the following into the first box under Query Editor, and then click Execute.
+      
+      
+FIND {Wingo} IN ALL FIELDS RETURNING Account(Name), Contact(FirstName,LastName,Department)Copy
+      
+      All account and contact records in your org that satisfy the criteria will display in the Query Results section as rows with fields. The results are grouped in tabs for each object (account or contact). The SOSL query returns records that have fields whose values match Wingo. Based on our sample data, only one contact has a field with the value Wingo, so this contact is returned..
+      
+        
+          
+            
+              
+              
+                
+                  Note
+                  The search query in the Query Editor and the API must be enclosed within curly brackets ({Wingo}). In contrast, in Apex the search query is enclosed within single quotes ('Wingo').
+                
+              
+            
+          
+        
+      
+    
+    
+      
+        Basic SOSL Syntax
+      
+      SOSL allows you to specify the following search criteria:
+          Text expression (single word or a phrase) to search for
+          Scope of fields to search
+          List of objects and fields to retrieve
+          Conditions for selecting rows in the source objects
+        
+      
+      This is the syntax of a basic SOSL query in Apex:&nbsp;
+      
+FIND 'SearchQuery' [IN SearchGroup] [RETURNING ObjectsAndFields]Copy
+      
+      Remember that in the Query Editor and API, the syntax is slightly different:
+FIND {SearchQuery} [IN SearchGroup] [RETURNING ObjectsAndFields]Copy
+      SearchQuery is the text to search for (a single word or a phrase). Search terms can be grouped with logical operators (AND, OR) and parentheses. Also, search terms can include wildcard characters (*, ?). The * wildcard matches zero or more characters at the middle or end of the search term. The ? wildcard matches only one character at the middle or end of the search term.
+      Text searches are case-insensitive. For example, searching for Customer, customer, or CUSTOMER all return the same results.
+      SearchGroup is optional. It is the scope of the fields to search. If not specified, the default search scope is all fields. SearchGroup can take one of the following values.
+      
+        ALL FIELDS
+        NAME FIELDS
+        EMAIL FIELDS
+        PHONE FIELDS
+        SIDEBAR FIELDS
+      
+      ObjectsAndFields is optional. It is the information to return in the search result—a list of one or more sObjects and, within each sObject, list of one or more fields, with optional values to filter against. If not specified, the search results contain the IDs of all objects found.
+    
+    
+      Single Words and Phrases
+      A SearchQuery contains two types of text:
+      
+        
+Single Word— single word, such as test or hello. Words in the SearchQuery are delimited by spaces, punctuation, and changes from letters to digits (and vice-versa). Words are always case insensitive.
+        
+Phrase— collection of words and spaces surrounded by double quotes such as "john smith". Multiple words can be combined together with logic and grouping operators to form a more complex query.
+      
+    
+    
+      Search Examples
+      To learn about how SOSL search works, let’s play with different search strings and see what the output is based on our sample data. This table lists various example search strings and the SOSL search results.
+      
+        
+          
+            
+              Search in all fields for:
+              Search Description
+              Matched Records and Fields
+            
+          
+          
+            
+              The Query
+              This search returns all records whose fields contain both words: The and Query, in any location of the text. The order of words in the search term doesn’t matter.
+              Account: The SFDC Query Man (Name field matched)
+            
+            
+              Wingo OR Man
+              This search uses the OR logical operator. It returns records with fields containing the word Wingo or records with fields containing the word Man.
+              Contact: Carol Ruiz, Department: 'Wingo'Account: The SFDC Query Man (Name field matched)
+              
+            
+            
+              1212
+              This search returns all records whose fields contain the word 1212. Phone fields that end with -1212 are matched because 1212 is considered a word when delimited by the dash.
+              Account: The SFDC Query Man, Phone: '(415)555-1212'Contact: Carol Ruiz, Phone: '(415)555-1212'
+              
+            
+            
+              wing*
+              This is a wildcard search. This search returns all records that have a field value starting with wing.
+              Contact: Maria Ruiz, Department: 'Wingo'Account: The SFDC Query Man, Description: 'Expert in wing technologies.'
+              
+            
+          
+        
+      
+    
+    
+      
+        SOSL Apex Example
+      
+      This example shows how to run a SOSL query in Apex. First, the variable soslFindClause&nbsp; is assigned the search query, which consists of two terms (Wingo and SFDC) combined by the OR logical operator. The SOSL query references this local variable by preceding it with a colon, also called binding. The resulting SOSL query searches for Wingo or SFDC in any field. This example returns all the sample accounts because they each have a field containing one of the words. The SOSL search results are returned in a list of lists. Each list contains an array of the returned records. In this case, the list has two elements. At index 0, the list contains the array of accounts. At index 1, the list contains the array of contacts.
+      Execute this snippet in the Execute Anonymous window of the Developer Console. Next, inspect the debug log to verify that all records are returned.
+      
+String soslFindClause = 'Wingo OR SFDC';
+List&lt;List&lt;sObject&gt;&gt; searchList = [FIND :soslFindClause IN ALL FIELDS
+                    RETURNING Account(Name),Contact(FirstName,LastName,Department)];
+Account[] searchAccounts = (Account[])searchList[0];
+Contact[] searchContacts = (Contact[])searchList[1];
+System.debug('Found the following accounts.');
+for (Account a : searchAccounts) {
+    System.debug(a.Name);
+}
+System.debug('Found the following contacts.');
+for (Contact c : searchContacts) {
+    System.debug(c.LastName + ', ' + c.FirstName);
+}Copy
+      
+    
+    
+      
+        Tell Me More...
+      
+      You can filter, reorder, and limit the returned results of a SOSL query. Because SOSL queries can return multiple sObjects, those filters are applied within each sObject inside the RETURNING clause.
+      You can filter SOSL results by adding conditions in the WHERE clause for an object. For example, this results in only accounts whose industry is Apparel to be returned: RETURNING Account(Name, Industry WHERE Industry='Apparel').
+      Likewise, ordering results for one sObject is supported by adding ORDER BY for an object. For example this causes the returned accounts to be ordered by the Name field: RETURNING Account(Name, Industry ORDER BY Name).
+      The number of returned records can be limited to a subset of records. This example limits the returned accounts to 10 only: RETURNING Account(Name, Industry LIMIT 10).
+    
+  
+
+
+
+  
+    Resources
+  
+  
+    
+      SOQL and SOSL Reference
+    
+  
+
+

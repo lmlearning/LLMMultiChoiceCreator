@@ -1,0 +1,147 @@
+
+
+  Learning Objectives
+
+After completing this unit, you’ll be able to:
+
+  Define the key components used to create a record-triggered process.
+  Describe when to use Fast Field Updates.
+  Describe when to use Actions and Related Records.
+  Identify options for when to run a flow when a record is updated.
+  Build a flow that creates a draft contract based on a change in the opportunity.
+
+
+  Business Requirement
+
+What do you want your record-triggered flow to do? Suppose you want to automatically create contracts for Closed Won high-value opportunities. That’s your business requirement.&nbsp;
+To build a record-triggered flow, we define the business requirement in three parts: trigger, criteria, and action. For example: If an opportunity is created or updated (trigger) and it’s high-value and closed won (criteria), then create a draft contract (action).&nbsp;
+
+
+  Plan and Explain Your Flow
+
+Make things easier on yourself by planning your record-triggered flow before you try to build it. Consider these questions.
+
+  Does the flow run immediately or is it scheduled?
+  Does the flow create another record or just update a record?
+  Does the flow run every time a record is updated or only the first time its criteria are met?
+
+Sketch your business processes before building them in Flow Builder. Use the&nbsp;Description fields in your flow to explain your intent and design. Those descriptions will be helpful later for you and anyone else who updates the flow.
+
+  Configure Start
+
+This is where you select an object, configure the trigger, and set entry conditions.
+
+  From Setup, enter Flows in the Quick Find box, then select Flows.
+  Click New Flow.
+  Select Record-Triggered Flow.
+  Click Create. The Configure Start window opens.
+
+
+
+  Define the Trigger
+
+
+  For Object, select Opportunity.
+  For Trigger the Flow When, select A record is created or updated.The conditions (the criteria that trigger the flow) are checked every time a record is updated, ensuring that no changes are missed.
+  For Condition Requirements, select All Conditions Are Met (AND).
+  Define the first condition:
+      Field: StageName(For fields that provide a picklist, start typing the value you want and then select it from the list.)
+      Operator: Equals
+
+      Value: ClosedWon
+
+    
+  
+  Click Add Condition.
+  Define the second condition:
+      Field: Amount
+
+      Operator: Greater Than
+
+      Value: 25000
+
+    
+  
+  For When to Run the Flow for Updated Records, select Only when a record is updated to meet the condition requirements.Why did we select this option? We want the Flow to run only when the triggered record is changed from not meeting the entry conditions to meeting the entry conditions. The trigger fires every time an opportunity is edited, but we want to create a contract only once. If we don’t select ‘Only when a record is updated to meet the condition requirements’, then every time the description (or anything else) in a ClosedWon opportunity for an amount greater than 25000 is edited, the flow will run and create another contract.
+  For Optimize the Flow For, select Actions and Related Records.With this option you can update any record (not just the record that triggered the flow) and perform actions.
+  Click Done.
+
+This is the resulting flow:
+Start
+Record-Triggered Flow
+Object: Opportunity
+Trigger: A record is created or updated
+Conditions: 2
+Optimize for: Actions and Related Records
+
+&nbsp;
+The Opportunity object was selected and 2 conditions were applied.
+
+  
+    
+      
+        
+        
+          
+            If you’re trying to update the record that triggered the flow, then you should optimize the flow using Fast Field Updates. A flow using Fast Field Updates runs before the record is saved to the database.
+          
+        
+      
+    
+  
+
+
+  Create a New Record
+
+Now let’s create a Salesforce record using values from the flow.
+
+  Click + to add an element.
+  Scroll to the Data section and click Create Records. The New Create Records window opens.
+
+  For Label, enter Create Draft Contract. The API Name is automatically updated to Create_Draft_Contract.
+  For Description, enter&nbsp;Create a draft contract when an opportunity is won and is over 25,000.
+  For How Many Records to Create, keep One&nbsp;selected.
+  For How to Set the Record Fields, select Use separate resources, and literal values.Use this option to populate the new contract record with data we choose from multiple sources. With Use all values from a record, you must first create a record variable and set its values. It's easier and more efficient to manually select the values you want to use in the new record.
+  For Object, select Contract.
+  Under Set Field Values for the Contract, associate the new contract with the opportunity’s account:
+      Field: AccountId.
+      Value: $Record &gt; Account &gt; Id (the field automatically updates to $Record &gt; Account ID &gt; Account ID)Data from the record that triggered the flow is stored in the $Record variable. To insert values from the triggering opportunity, start with $Record and drill down. In this example, we set the account on the new contract record to match the account related to the opportunity.
+    
+  
+  Click Add Field.
+  Set the Status of the new contract:
+      Field: Status
+
+      Value: Draft
+
+    
+  
+  Click Done.
+
+
+  Save and Debug
+
+When you finish creating your record-triggered flow, it’s a best practice to save and debug immediately. Testing your flow before activating it lets you try different scenarios without impacting your data.
+
+  Click Save.
+  For Flow Label, enter Closed Won Opportunities. The Flow API Name field is automatically updated to Closed_Won_Opportunities.
+  For Description, enter If a high-value opportunity is closed and won, create a draft contract.
+  Click Save.
+  Click Debug.If there were multiple paths, we could only debug one path at a time.
+  Under Debug Options, select Skip start condition requirements.
+  For Run the Flow As If the Record Is, select Updated.
+  For Opportunity, find and select an organization to run the flow against. This example uses Grand Hotels Emergency Generators. Make sure the Opportunity you select is Closed Won and its Amount is over 25000.
+  In the opportunity, scroll down and verify that the amount is larger than 25000. If it’s not, enter an amount larger than 25000.
+  Click Run. The flow is debugged. If it ran successfully, the line connecting elements is orange.
+
+  Click Expand All to view more information in the Debug Details panel.
+  Click Back ( &nbsp;) to exit Flow Builder.
+
+Well done! You built a record-triggered flow.&nbsp;
+
+  Resources
+
+
+  Salesforce Architects: Record-Triggered Automation
+  Developer Guide:&nbsp;Triggers and Order of Execution
+

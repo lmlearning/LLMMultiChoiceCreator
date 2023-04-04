@@ -1,0 +1,105 @@
+Debug and Run Diagnostics
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Understand which debugging features are available on the Lightning Platform
+Use the Log Inspector in Developer Console to examine debug logs
+Follow Along with Trail Together
+Want to follow along with an expert as you work through this step? Take a look at this video, part of the Trail Together series.
+
+
+
+(This clip starts at the 40:30 minute mark, in case you want to rewind and watch the beginning of the step again.)
+
+Taking a Step Back
+We’re not going to try and tell you that debugging on the Lightning Platform is just as easy as it is in Visual Studio. To be perfectly honest, it’s not even close. Debugging in a multi-tenant cloud environment presents unique challenges. That doesn’t mean you can’t do debugging and diagnostic work on the Lightning Platform. It’s just that debugging is different from what you’re used to. The good news is that in this area Salesforce has made enormous strides recently, and more is coming with every release.
+
+Your Friend, the Debug Log
+In the world of the Lightning Platform, the debug log is where you find most of what you need to debug and analyze your code. You’ve already seen how you can write to the debug log. That is done with something like the following.
+
+System.debug('My Debug Message');
+You can also specify one of the following logging levels.
+
+NONE
+ERROR
+WARN
+INFO
+DEBUG
+FINE
+FINER
+FINEST
+These levels run from lowest to highest and are cumulative. So if you pick the finest level, you get all messages that are logged as error, warn, info, and so on. There are also several debug log categories, and the amount of information logged depends on the log level. Learn more about debugging for different users by checking out the links in Resources.
+
+And why is all this so important to know?
+
+Ok, so we know you’ve heard a lot about limits, but understanding limits are critical to your success, so bear with us. Each debug log must be 20 MB or smaller. If it exceeds this amount, you won’t see everything you need. Additionally, each org can retain up to 1,000 MB of debug logs. The oldest logs are overwritten.
+
+Because debug logs are your primary way of getting debug information about your application, you want to make sure to not exceed these limits. If you never see an error message, you can’t possibly do anything to address it. Check out the links in Resources about Advanced Apex Debugging and Best Practices for tips on how to avoid these kinds of issues.
+
+Use the Log Inspector
+Developer Console has grown quite a bit in the past few releases. One of its more useful features is the Log Inspector. To see how it works, let’s walk through running some anonymous code and viewing the results.
+
+From Setup, select Your Name > Developer Console to open Developer Console.
+Select Debug > Change Log Levels.
+Click the Add/Change link in General Trace Setting for You.
+Select INFO as the debug level for all columns.
+Click Done.
+Click Done.
+Select Debug > Perspective Manager.
+Select All (Predefined) and click Set Default.
+Click Yes to change this to your default perspective.
+Close the Developer Console Perspective window.
+Select Debug > Open Execute Anonymous Window.
+Delete the existing code, and insert the following snippet:
+System.debug(LoggingLevel.INFO, 'My Info Debug Message');
+System.debug(LoggingLevel.FINE, 'My Fine Debug Message');
+List<Account> accts = [SELECT Id, Name FROM Account];
+for(Account a : accts) {
+    System.debug('Account Name: ' + a.name);
+    System.debug('Account Id: ' + a.Id);
+}
+Make sure that Open Log is selected, and click Execute.
+Select Debug > Switch Perspective > All (Predefined).
+Examine the results in the Timeline and Executed Units tabs.
+Under Execution Log, select the Filter option, and enter FINE. Because we set the debug level to INFO for Apex Code, no results appear.
+Select Debug > Change Log Levels.
+Click the Add/Change link in General Trace Setting for You.
+Change the DebugLevel for ApexCode and Profiling to FINEST.
+Click Done.
+Click Done.
+Select Debug > Open Execute Anonymous Window.
+Leave the code that is currently there, and click Execute.
+Under Execution Log, select the Filter option, and enter FINE. The filter search is case sensitive. You now see "My Fine Debug Message" displayed. You should also notice a size difference between the two latest logs in the Logs tab.
+Set Checkpoints
+As a .NET developer, you’re used to setting breakpoints in your applications. But in a cloud-based, multi-tenanted environment where everyone is sharing resources, allowing everyone to halt execution and keep database connections open is disastrous.
+
+Checkpoints are similar to breakpoints in that they reveal a lot of detailed execution information about a line of code. They just don’t stop execution on that line.
+
+To see how they work, let’s walk through setting a checkpoint on a line of code that you created in an earlier unit on Understanding Execution Context. If you haven’t created the handler and trigger code for the AccountTrigger, go back to that unit and complete that section before continuing.
+
+From Setup, select Your Name > Developer Console to open Developer Console.
+Select File > Open.
+Select Classes as the entity type, and AccountHandler as the entity.
+Click Open.
+Position your cursor over line 10 in the left margin and click once. A red dot appears next to the line number.
+Double-click the latest entry in the Logs panel to open the debug log.
+Select Debug > Open Execute Anonymous Window.
+Delete the existing code, and insert the following snippet:
+Account acct = new Account(
+    Name='Test Account 3',
+    Phone='(415)555-8989',
+    NumberOfEmployees=30,
+    BillingCity='San Francisco');
+insert acct;
+Make sure that Open Log is selected, and click Execute.
+Click the Checkpoints tab, and double-click the first entry that appears. The Checkpoint Inspector appears.
+On the Symbols tab, expand the nodes within the execution tree. Notice the Key and Value columns.
+Click the Heap tab. Notice the Count and Total Size columns.
+What's Next?
+Now that you have a grasp of Apex basics you are ready to continue to your Salesforce journey. Head on over to our Developer Beginner Trail to leverage your existing development skills to build apps fast on the Salesforce Platform.
+
+Resources
+Debug Log in the Apex Code Developer’s Guide
+Working with Logs in the Apex Code Developer’s Guide
+Examples of Using the Log Inspector
+Setting Checkpoints in Apex Code

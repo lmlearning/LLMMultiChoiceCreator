@@ -1,0 +1,258 @@
+
+
+  Learning Objectives
+
+After completing this unit, you'll be able to:
+
+  Describe the contents of each component file.
+  Create JavaScript methods for a Lightning web component.
+  Use Lifecycle Hooks in component JavaScript.
+
+
+  More Play Time
+
+Say you want to build a data display element, independent of a specific object in Salesforce. A good example is the productCard component in the ebikes sample repo. Let's examine that card component, and build our own version from scratch so you can see how it evolves into a full-fledged Lightning web component. You'll quickly get the basics when you build up the parts of a component and explore more samples.
+A component simply needs a folder and its files with the same name. They're automatically linked by name and location.
+
+All Lightning web components have a namespace that's separated from the folder name by a hyphen. For example, the markup for the Lightning web component with the folder name app in the default namespace c is &lt;c-app&gt;.
+However, the Salesforce platform doesn't allow hyphens in the component folder or file names. What if a component's name has more than one word, like “mycomponent”? You can't name the folder and files my-component, but we do have a handy solution.
+Use camel case to name your component myComponent. Camel case component folder names map to kebab-case in markup. In markup, to reference a component with the folder name myComponent, use &lt;c-my-component&gt;.
+For example, the LWC Samples repo has the viewSource folder containing the files for the viewSource component. When the hello component references the viewSource component in HTML, it uses c-view-source.
+
+  A Look Into the HTML File
+
+Lightning web component HTML files all include the template tag. The template tag contains the HTML that defines the structure of your component. Let's look at the HTML for a simplified version of the productCard component from the ebikes repo.
+Follow along by pasting these examples in WebComponents.dev.
+
+  Navigate to webcomponents.dev and select LWC. (Or go directly to webcomponents.dev/create/lwc.)
+  If you aren't already logged in, use your GitHub account to log in to WebComponents.dev.
+  Paste the following into app.html (replacing any existing HTML in the file).
+&lt;template&gt;
+    &lt;div&gt;
+        &lt;div&gt;Name: {name}&lt;/div&gt;
+        &lt;div&gt;Description: {description}&lt;/div&gt;
+        &lt;div&gt;Category: {category}&lt;/div&gt;
+        &lt;div&gt;Material: {material}&lt;/div&gt;
+        &lt;div&gt;Price: {price}&lt;/div&gt;
+        &lt;div&gt;&lt;img src={pictureUrl}/&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;Copy
+    The identifiers in the curly braces {} are bound to the fields of the same name in the corresponding JavaScript class.
+  Paste the following into app.js.
+import { LightningElement } from 'lwc';
+export default class App extends LightningElement {
+   name = 'Electra X4';
+   description = 'A sweet bike built for comfort.';
+   category = 'Mountain';
+   material = 'Steel';
+   price = '$2,700';
+   pictureUrl = 'https://s3-us-west-1.amazonaws.com/sfdc-demo/ebikes/electrax4.jpg';
+}Copy
+  
+  Save the files.
+
+You see a bright shiny bike!
+Now let's play with a real-world example. Say you want to display data, but you know it can take some time to load. You don't want the user wondering what's up. You can use if:false and if:true conditional directives within your template to determine which visual elements are rendered.
+
+  Paste the following into app.html. The content in the “display” div tag doesn't appear until the value of ready is true in the HTML file.&lt;template&gt;
+    &lt;div id="waiting" if:false={ready}&gt;Loading…&lt;/div&gt;
+    &lt;div id="display" if:true={ready}&gt;
+        &lt;div&gt;Name: {name}&lt;/div&gt;
+        &lt;div&gt;Description: {description}&lt;/div&gt;
+        &lt;div&gt;Category: {category}&lt;/div&gt;
+        &lt;div&gt;Material: {material}&lt;/div&gt;
+        &lt;div&gt;Price: {price}&lt;/div&gt;
+        &lt;div&gt;&lt;img src={pictureUrl}/&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;Copy
+  
+  Paste the following into app.js. This holds our data values and sets a 3-second timer. After 3 seconds, the content should appear. (Of course, this is only for testing purposes.)import { LightningElement } from 'lwc';
+export default class App extends LightningElement {
+   name = 'Electra X4';
+   description = 'A sweet bike built for comfort.';
+   category = 'Mountain';
+   material = 'Steel';
+   price = '$2,700';
+   pictureUrl = 'https://s3-us-west-1.amazonaws.com/sfdc-demo/ebikes/electrax4.jpg';
+   ready = false;
+   connectedCallback() {
+       setTimeout(() =&gt; {
+           this.ready = true;
+       }, 3000);
+   }
+}Copy
+  
+  Save the files.
+
+
+  Base Lightning Web Components
+
+Now, you don't want to build all your components from the ground up. So let's explore using a base Lightning web component. And of course, there are lots of components, including field types, display controllers, navigation items, and more. All of them are listed in the Component Reference.
+Let's make the details of the bike stand out. In the app.html file, replace the div tags for material and category in the last example with a lightning-badge component. Here's the HTML.
+&lt;template&gt;
+    &lt;div id="waiting" if:false={ready}&gt;Loading…&lt;/div&gt;
+    &lt;div id="display" if:true={ready}&gt;
+        &lt;div&gt;Name: {name}&lt;/div&gt;
+        &lt;div&gt;Description: {description}&lt;/div&gt;
+        &lt;lightning-badge label={material}&gt;&lt;/lightning-badge&gt;
+        &lt;lightning-badge label={category}&gt;&lt;/lightning-badge&gt;
+        &lt;div&gt;Price: {price}&lt;/div&gt;
+        &lt;div&gt;&lt;img src={pictureUrl}/&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/template&gt;Copy
+Save the file.
+The words Steel and Mountain appear as badges. It's that simple.
+
+OK. Let's look at the JavaScript.
+
+  Working with JavaScript
+
+Here's where you make stuff happen. As you've seen so far, JavaScript methods define what to do with input, data, events, changes to state, and more to make your component work.
+The JavaScript file for a Lightning web component must include at least this code, where MyComponent is the name you assign your component class.
+import { LightningElement } from 'lwc';
+export default class MyComponent extends LightningElement {
+}Copy
+The export statement defines a class that extends the LightningElement class. As a best practice, the name of the class usually matches the file name of the JavaScript class, but it's not a requirement.
+
+  The LWC Module
+
+Lightning Web Components uses modules (built-in modules were introduced in ECMAScript 6) to bundle core functionality and make it accessible to the JavaScript in your component file. The core module for Lightning web components is lwc.
+Begin the module with the import statement and specify the functionality of the module that your component uses.
+The import statement indicates the JavaScript uses the LightningElement functionality from the lwc module.// import module elements
+import { LightningElement} from 'lwc';
+// declare class to expose the component
+export default class App extends LightningElement {
+    ready = false;
+    // use lifecycle hook
+    connectedCallback() {
+        setTimeout(() =&gt; {
+            this.ready = true;
+        }, 3000);
+    }
+}Copy
+
+  
+LightningElement is the base class for Lightning web components, which allows us to use connectedCallback().
+  The connectedCallback() method is one of our lifecycle hooks. You'll learn more about lifecycle hooks in the next section. For now, know that the method is triggered when a component is inserted in the document object model (DOM). In this case, it starts the timer.
+
+
+  Lifecycle Hooks
+
+Lightning Web Components provides methods that allow you to “hook” your code up to critical events in a component's lifecycle. These events include when a component is:
+
+  Created
+  Added to the DOM
+  Rendered in the browser
+  Encountering errors
+  Removed from the DOM
+
+Respond to any of these lifecycle events using callback methods. For example, the connectedCallback() is invoked when a component is inserted into the DOM. The disconnectedCallback() is invoked when a component is removed from the DOM.
+In the JavaScript file we used to test our conditional rendering, we used the connectedCallback() method to automatically execute code when the component is inserted into the DOM. The code waits 3 seconds, then sets ready to true.import { LightningElement } from 'lwc';
+export default class App extends LightningElement {
+    ready = false;
+    connectedCallback() {
+        setTimeout(() =&gt; {
+            this.ready = true;
+        }, 3000);
+    }
+}Copy
+
+  
+    
+      
+        
+        
+          
+            When you use this example in an editor like VS Code, you might see a lint warning "Restricted async operation...." for the setTimeout() function. This warning indicates you're using an async operation that's often misused; it delays behavior based on time instead of waiting for an event. In this case, setTimeout() is suitable to demonstrate an arbitrary time delay, and the warning should not prevent you from using it.
+          
+        
+      
+    
+  
+
+Also, notice that we used the this keyword. Keyword usage should be familiar if you've written JavaScript, and behaves just like it does in other environments. The this keyword in JavaScript refers to the top level of the current context. Here, the context is this class. The connectedCallback() method assigns the value for the top level ready variable. It's a great example of how Lightning Web Components lets you bring JavaScript features into your development. You can find a link to good information about this in the Resources section.
+
+  Decorators
+
+Decorators are often used in JavaScript to modify the behavior of a property or function.
+To use a decorator, import it from the lwc module and place it before the property or function.
+import { LightningElement, api } from 'lwc';
+export default class MyComponent extends LightningElement{
+    @api message;
+}Copy
+You can import multiple decorators, but a single property or function can have only one decorator. For example, a property can't have @api and @wire decorators.
+Examples of Lightning Web Components decorators include:
+
+  
+@api: Marks a field as public. Public properties define the API for a component. An owner component that uses the component in its HTML markup can access the component's public properties. All public properties are reactive, which means that the framework observes the property for changes. When the property's value changes, the framework reacts and rerenders the component.
+    
+      
+        
+          
+            
+            
+              
+                Field and property are almost interchangeable terms. A component author declares fields in a JavaScript class. An instance of the class has properties. To component consumers, fields are properties. In a Lightning web component, only fields that a component author decorates with @api are publicly available to consumers as object properties.
+              
+            
+          
+        
+      
+    
+  
+  
+@track: Tells the framework to observe changes to the properties of an object or to the elements of an array. If a change occurs, the framework rerenders the component. All fields are reactive. If the value of a field changes and the field is used in a template—or in the getter of a property used in a template—the framework rerenders the component. You don't need to decorate the field with @track. Use @track only if a field contains an object or an array and if you want the framework to observe changes to the properties of the object or to the elements of the array. If you want to change the value of the whole property, you don't need to use @track.
+    
+      
+        
+          
+            
+            
+              
+                Prior to Spring '20, you had to use @track to mark fields (also known as private properties) as reactive. You're no longer required to do that. Use @track only to tell the framework to observe changes to the properties of an object or to the elements of an array. Some legacy examples may still use @track where it isn't needed, but that's OK because using the decorator doesn't change the functionality or break the code. For more information, see this release note.
+              
+            
+          
+        
+      
+    
+  
+  
+@wire: Gives you an easy way to get and bind data from a Salesforce org.
+
+Here's an example using the @api decorator to render a value from one component (bike) in another component (app). The file structure looks like this: 
+The app component uses the following HTML.&lt;!-- app.html --&gt;
+&lt;template&gt;
+&lt;div&gt;
+    &lt;c-bike bike={bike}&gt;&lt;/c-bike&gt;
+&lt;/div&gt;
+&lt;/template&gt;Copy
+The app component uses the following JavaScript.// app.js
+import { LightningElement } from 'lwc';
+export default class App extends LightningElement {
+    bike = {
+        name: 'Electra X4',
+        picture: 'https://s3-us-west-1.amazonaws.com/sfdc-demo/ebikes/electrax4.jpg'
+    };
+}Copy
+The bike component uses the following HTML.&lt;!-- bike.html --&gt;
+&lt;template&gt;
+    &lt;img src={bike.picture} alt="bike picture" /&gt;
+    &lt;p&gt;{bike.name}&lt;/p&gt;
+&lt;/template&gt;Copy
+The bike component uses the following JavaScript.// bike.js
+import { LightningElement, api } from 'lwc';
+export default class Bike extends LightningElement {
+    @api bike;
+}Copy
+We're moving fast and you've been able to try out some things. In the next unit, we take a step back and talk more about the environment where the components live.
+
+  Resources
+
+
+  Lightning Web Components Developer Guide: Reactivity
+  
+Lightning Web Components Developer Guide: Reference (includes HTML Template Directives, Decorators, and more)
+  MDN web docs: this
+
+

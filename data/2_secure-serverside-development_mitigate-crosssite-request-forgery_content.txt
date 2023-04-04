@@ -1,0 +1,69 @@
+
+
+  Learning Objectives
+
+After completing this unit, you'll be able to:
+
+  Define a CSRF vulnerability.
+  Identify a CSRF vulnerability in Lightning Platform applications.
+  Prevent a CSRF vulnerability using code- and org-level protections.
+
+
+  What Is CSRF?
+
+CSRF is a common web application vulnerability where a malicious application causes a user’s client to perform an unwanted action on a trusted site for which the user is currently authenticated. But what does that actually mean?
+
+To explain, we use an example to walk through what this attack can look like in a real application. Again, think of our School District Management developer org.
+Let’s start with the idea that we have built an application that lists all of the current students in our network of schools. In this application, there are two important things to note.
+
+  Only the admin or the superintendent has access to the page that allows users to promote students to the honor roll.
+  If you click the Honor Roll link, the page will automatically refresh. If you’ve added a student, there will be an alert noting that your student has been added to the honor roll.
+
+What is happening behind the scenes is that the Honor Roll button makes a GET request to /promote?UserId=&lt;userid&gt;. As the page loads, it reads the URL parameter value and automatically changes the role of that student to the honor roll.
+Seems pretty straightforward. You may be wondering, where’s the vulnerability?&nbsp;
+Let’s take a look at this scenario again and change it slightly.
+This time, imagine that after you logged in to your School District Management org, you decided to browse to another website. While on this website, you click a hyperlink. This hyperlink redirects to a link to www.beststudents.com/promote?user_id=123. This malicious link is executed on behalf of the admin (your signed-in account), thereby promoting a student to the honor roll without you realizing it.&nbsp;
+
+This example is precisely what a CSRF attack can look like. The attacker got the user’s client (the browser) to perform an unwanted action (the advancement of a student to the honor roll) on a trusted site (School District Management app) for which the user is currently authenticated.
+
+  Prevent&nbsp;CSRF Attacks
+
+Successfully performing a CSRF attack is not trivial. It requires the targeted user to visit the attack page while authenticated with the targeted service, which often requires coordinated deception on the part of the attacker (this is most commonly seen in phishing campaigns). If the attack is successfully performed, the impact of it can be severe, ranging from creating or modifying users to deleting data and even to account compromise. So how do you prevent an attacker from launching an attack on your end users?
+If you remember from our honor roll example, the malicious website automatically submitted the request to the application containing the URL parameter (UserId) required to successfully submit the request. For this attack to succeed, the attacker had to know the exact name of the parameter—in other words, the attacker had to know the parameter name was “userID” not “id” or “user”—and also supply the associated values.
+Consider a slightly different version of the page that has two required URL parameters: userId and token. For this same attack to occur, the attacker again has to correctly guess values for both parameters. But what if you made the token parameter value a random, unique value that changed on every request? This would make it next to impossible for an attacker to guess the current value, preventing the attack. This example is the most common prevention technique for CSRF.
+
+For this prevention technique to be successful, four things must happen:
+
+  All sensitive state-changing requests (anything performing database operations) must include the token.
+  The token must be unique to the request or user’s session.
+  The token must be difficult to predict (long and random).
+  The token must be validated by the server to ensure the request originated from the intended user.
+
+If all four steps are properly implemented by the server, then the attacker can’t guess the current value of the token parameter and can’t manipulate the user’s browser into making the correct honor roll request to the app. The attacker sees an error and is unsuccessful.
+
+  Use the Salesforce Platform to Protect Against CSRF
+
+Luckily, Salesforce includes out-of-the-box protections against CSRF for developers.
+By default, requests made against Salesforce resources have CSRF tokens attached to them. These pseudo-random tokens prevent the reuse and distribution of hyperlinks in order to protect privileged accounts from accidentally making state-changing requests that were not intended.
+Beyond this, developers of Lightning applications need to pay attention to how their code is structured to prevent CSRF attacks from occurring. The most simple forms of CSRF attacks use HTTP GET requests with state-changing parameters, like GET mywebsite.com?change_username=”joe”.
+By simply avoiding the use of state-changing HTTP GET requests, you can eliminate a large number of CSRF vulnerabilities in your code. When you reach out to a web API, make use of POST or PUT instead when state changes are needed.&nbsp;
+There are several other mitigations that can be put in place in your application to prevent CSRF attacks.
+When an endpoint is hit in your API, you can validate the origin header. The origin header is set on HTTP GET requests and specifies the URL from which a request originated. If the request is on the forbidden headers list, meaning all major browsers will not allow it to be spoofed via JavaScript—it will always return the correct value unless the request initiates from a nonstandard browser or tool.
+When you integrate your Salesforce Lightning application with a third-party application via API, you may desire your own anti-CSRF tokens. These can easily be added to XMLHttpRequests within Lightning by using setRequestHeader() in an HTTP request that looks like this:
+
+var o = XMLHttpRequest.prototype.open;
+XMLHttpRequest.prototype.open = function(){
+    var res = o.apply(this, arguments);
+    var err = new Error();
+    this.setRequestHeader('anti-csrf-token', csrf_token);
+    return res;
+};Copy
+
+Now that you understand how to prevent malicious applications from accessing your users’ clients and performing unwanted actions, you can ensure that the applications you design for the Salesforce platform are secure.&nbsp;
+In addition, knowing how to secure your development on the server-side prevents you from leaving security vulnerabilities open when you're building applications.&nbsp;
+
+  Resources
+
+
+  Website: OWASP Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet
+

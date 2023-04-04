@@ -1,0 +1,217 @@
+Understand Execution Context
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Know which methods to use to invoke Apex
+Write a trigger for a Salesforce object
+Observe how execution context works by executing code in Developer Console
+Understand how governor limits impact design patterns
+Understand the importance of working with bulk operations
+Follow Along with Trail Together
+Want to follow along with an expert as you work through this step? Take a look at this video, part of the Trail Together series.
+
+
+
+(This clip starts at the 16:36 minute mark, in case you want to rewind and watch the beginning of the step again.)
+
+What Is Execution Context?
+For ASP.NET applications, code is executed in the context of an application domain. In the Lightning Platform world, code executes within an execution context. In a nutshell, this context represents the time between when the code is executed and when it ends. The important thing for you to understand is that the Apex code you write is not always the only code that is executing.
+
+To understand how this works, you need to know all the ways Apex code can be executed on the platform.
+
+Methods of Invoking Apex
+
+Method	Description
+Database Trigger	Invoked for a specific event on a custom or standard object.
+Anonymous Apex	Code snippets executed on the fly in Dev Console & other tools.
+Asynchronous Apex	Occurs when executing a future or queueable Apex, running a batch job, or scheduling Apex to run at a specified interval.
+Web Services	Code that is exposed via SOAP or REST web services.
+Email Services	Code that is set up to process inbound email.
+Visualforce or Lightning Pages	Visualforce controllers and Lightning components can execute Apex code automatically or when a user initiates an action, such as clicking a button. Lightning components can also be executed by Lightning processes and flows.
+Besides invoking Apex code, actions, such as creating a new task, sending an email, performing a field update, or sending an outbound message, can all be triggered by one of the declarative platform features. These actions also run within an execution context.
+
+Another important consideration is the context of the user executing the Apex code. By default, Apex executes in system context. Apex code has access to all objects and fields. Object permissions, field-level security, and sharing rules aren’t applied for the current user. You can use the with sharing keyword to specify that the sharing rules for the current user be taken into account for a class. This topic is important, so check out Using the with sharing or without sharing keywords.
+
+Trigger Essentials
+Before learning more about the execution context, let’s take a step back to introduce you to the world of database triggers. Similar to triggers in SQL Server, Apex database triggers execute programming logic before or after events to records in Salesforce. When defining the trigger, you can specify more than one of the following events:
+
+before insert
+before update
+before delete
+after insert
+after update
+after delete
+after undelete
+The basic syntax for a trigger looks like the following:
+
+trigger TriggerName on ObjectName (trigger_events) {
+   // code_block
+}
+Now, we know how much .NET developers love to solve problems with code, but we have a super big productivity tip for you here. You only want to resort to using a trigger when you are absolutely sure that the same thing cannot be accomplished with one of our point-and-click automation tools.
+
+To make your life easier, the Salesforce platform includes a powerful automation tool, Flow Builder, for managing business logic without writing code. In most cases, tasks that could once upon a time only be accomplished with a trigger are now better suited for one of the automation tools.
+
+Note
+Note
+If you’re a developer new to the platform, definitely take the time to check out the Approve Records with Approval Processes module in the Developer Beginner trail before creating a trigger. We’re pretty sure that you don’t want to be known as the guy or gal who brought a lot of unnecessary technical overhead into the Salesforce org.
+
+Mark Execution Context
+To better understand execution context, let’s walk through creating an Apex database trigger that creates an opportunity when a new account is entered. This trigger calls a method from a handler class, so we first need to create that.
+
+From Setup, select Your Name > Developer Console to open Developer Console.
+In Developer Console, select File > New > Apex Class.
+Enter AccountHandler for the class name and click OK.
+Delete the existing code, and insert the following snippet:
+public with sharing class AccountHandler {
+    public static void CreateNewOpportunity(List<Account> accts) {
+        for (Account a : accts) {
+            Opportunity opp = new Opportunity();
+            opp.Name = a.Name + ' Opportunity';
+            opp.AccountId = a.Id;
+            opp.StageName = 'Prospecting';
+            opp.CloseDate = System.Today().addMonths(1);
+            insert opp;
+        }
+    }
+}
+Press Ctrl + S to save your class.
+Note
+Note
+It’s considered a best practice to use only one trigger per object, which you see in the following example. You can then use context-specific handler methods within triggers to create logic-less triggers. By adopting this practice, you can avoid the common pitfalls that new developers fall into. To learn more about these techniques, check out Trigger Frameworks and Apex Trigger Best Practices.
+
+So now that we have the handler class, we create the Account trigger.
+
+In Developer Console, select File > New > Apex Trigger.
+Enter AccountTrigger as the name, and select Account as the sObject.
+Click Submit.
+Delete the existing code, and insert the following snippet:
+trigger AccountTrigger on Account (before insert, before update, before
+    delete, after insert, after update, after delete,  after undelete) {
+    if (Trigger.isAfter && Trigger.isInsert) {
+        AccountHandler.CreateNewOpportunity(Trigger.New);
+    }
+}
+Press Ctrl + S to save your trigger.
+To complete the walkthrough, we execute anonymous code to simulate a user entering a new Account using the Salesforce interface. Remember, Apex code can be executed a number of different ways.
+
+From Setup, select Your Name > Developer Console to open Developer Console.
+Select Debug > Open Execute Anonymous Window.
+Delete the existing code, and insert the following snippet:
+Account acct = new Account(
+    Name='Test Account 2',
+    Phone='(415)555-8989',
+    NumberOfEmployees=50,
+    BillingCity='San Francisco');
+insert acct;
+Make sure that the Open Log option is selected and click Execute. A new tab shows the execution log. Keep it open so that you can examine it carefully.
+Examining the Execution Log
+Notice that the first line in the execution log marks the EXECUTION_STARTED event and that the last line is the EXECUTION_FINISHED event. Everything in between is the execution context.
+
+Let’s take a closer look at what happens. A CODE_UNIT_STARTED event marks when the code from the Execute Anonymous window was kicked off. This line is highlighted in red in the image below.
+
+Screenshot of the Debug Log in Developer Console, highlighting the code_unit_started events
+
+The second CODE_UNIT_STARTED line that is highlighted represents when code for the BeforeInsert event was executed.
+
+You can’t see this in the image, but if you’re following along with your own instance of Developer Console, scroll down further in the results and look for other instances of CODE_UNIT_STARTED. You should see at least one more instance representing when code for the AfterInsert event was executed. If you had created workflow rules that fired when a new account was created, they too would show up in the execution log. All this code operates under the same execution context, and thus, is subject to the same set of governor limits.
+
+You may be asking yourself, why is this so important to understand? Well, because Salesforce is a multi-tenanted environment, those governor limits are vital in keeping each instance of a Salesforce org from consuming too many resources. Essentially, they keep the whole system from crashing.
+
+Working with Limits
+And this brings us back to the subject of working with limits. The two limits you will probably be the most concerned with involve the number of SOQL queries or DML statements. These tend to trip up developers new to the platform, so we wanted to spend some extra time focusing on how to avoid them.
+
+Note
+Note
+There are lots of limits to be aware of, and they tend to change with each major release. Additionally, it’s not uncommon for limits to get looser rather than tighter, so be sure to check out the latest by looking at the Execution Governors and Limits link in Resources.
+
+Working in Bulk
+Many developers fall into a common trap of designing their code to work with a single record. They quickly learn that on the Lightning Platform this can be a huge mistake.
+
+Apex triggers can receive up to 200 records at once. Currently, the synchronous limit for the total number of SOQL queries is 100, and 150 for the total number of DML statements issued So, if you have a trigger that performs a SOQL query or DML statement inside of a loop and that trigger was fired for a bulk operation, guess what?
+
+BOOM!!!
+
+That’s right, you’re going to get a limits error. It’s possible to deploy code and have it run fine for a while before the limit is discovered. The developer then has to quickly go back and figure out how to “bulkify” the code. It’s not uncommon for this second attempt to take longer than the initial design. To avoid this scenario, design your Apex code to handle bulk operations from the very start. Learn about ways to do this from the Bulk Apex Triggers module.
+
+Maybe you noticed, maybe you didn’t, but the trigger handler code we created earlier didn’t use a bulk pattern, and therefore it’s prone to limits errors. To remind you, below is what the original code looked like.
+
+public with sharing class AccountHandler {
+    public static void CreateNewOpportunity(List<Account> accts) {
+        for (Account a : accts) {
+            Opportunity opp = new Opportunity();
+            opp.Name = a.Name + ' Opportunity';
+            opp.AccountId = a.Id;
+            opp.StageName = 'Prospecting';
+            opp.CloseDate = System.Today().addMonths(1);
+            insert opp;
+        }
+    }
+}
+Notice that the insert DML operation is inside the for loop. This is bad, very bad, and something to always avoid.
+
+Luckily for us, we can fix this code by changing it to write to a list variable inside of the loop and then insert the contents of the list in one step.
+
+From Setup, select Your Name > Developer Console to open Developer Console.
+In Developer Console, select File > Open.
+For the entity type, select Classes. Select AccountHandler as the entity.
+Click Open.
+Delete the existing code, and insert the following snippet:
+public with sharing class AccountHandler {
+    public static void CreateNewOpportunity(List<Account> accts) {
+        List<Opportunity> opps = new List<Opportunity>();
+        for (Account a : accts) {
+            Opportunity opp = new Opportunity();
+            opp.Name = a.Name + ' Opportunity';
+            opp.AccountId = a.Id;
+            opp.StageName = 'Prospecting';
+            opp.CloseDate = System.Today().addMonths(1);
+            opps.add(opp);
+        }
+        if (opps.size() > 0) {
+            insert opps;
+        }
+    }
+}
+Press Ctrl + S to save your class.
+Now that we fixed the trigger handler code, let’s test to make sure that the trigger can handle a load of 200 records. As we’re sure you know, writing unit tests to ensure that the code works is a best practice.
+
+In Developer Console, select File > New > Apex Class.
+Enter AccountTrigger_Test for the class name and click OK.
+Delete the existing code, and insert the following snippet:
+@isTest
+private class AccountTrigger_Test {
+    @isTest static void TestCreateNewAccountInBulk() {
+        // Test Setup data
+        // Create 200 new Accounts
+        List<Account> accts = new List<Account>();
+        for(Integer i=0; i < 200; i++) {
+            Account acct = new Account(Name='Test Account ' + i);
+            accts.add(acct);
+        }              
+        // Perform Test
+        Test.startTest();
+        insert accts;                               
+        Test.stopTest();
+        // Verify that 200 new Accounts were inserted
+        List<Account> verifyAccts = [SELECT Id FROM Account];
+        System.assertEquals(200, verifyAccts.size());    
+        // Also verify that 200 new Opportunities were inserted
+        List<Opportunity> verifyOpps = [SELECT Id FROM Opportunity];                              
+        System.assertEquals(200, verifyOpps.size());                             
+    }
+}
+Press Ctrl + S to save your class.
+Select Test > New Run.
+Select AccountTrigger_Test as the TestClass, and TestCreateNewAccountInBulk as the test method.
+Click Run.
+Select the Tests tab and verify that the test runs to completion with no failures, as indicated by a green checkmark in the Status column.
+Note
+Note
+Although we haven’t yet talked about unit tests, don’t worry. They work much the same way in the Lightning Platform as they do in .NET, with just a few different keywords. You’ll catch on pretty quickly as to how they’re structured. Learn more about testing Apex triggers by checking out the link in Resources.
+
+Tell Me More
+Apex uses a familiar try-catch-finally block to handle exceptions. But your catch statement and possible rollback could differ depending on where the Apex code is executed. Check out the link in Resources about best practices when dealing with try, catch, and rollback in Apex.
+
+There is no such thing as an application or session variable in the Lightning Platform. If you need data to persist between classes, you do have static variables, but keep in mind that static variables in the Lightning Platform don’t work the same as they do in .NET. In the Lightning Platform world, a static variable can only persist information within a single execution context, although other options for maintaining data across trigger invocations are available. Check out the Advanced Apex links in Internet Resources to learn more.
+
+When working with limits, there are many tradeoffs to consider, especially for developers of managed packages. By the way, Salesforce partners typically use managed packages to distribute and sell applications. In this module, we just skimmed the surface of what you need to know. If you’re serious about Apex development, check out the Advanced Apex links in Internet Resources.

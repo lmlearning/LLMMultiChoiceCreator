@@ -1,0 +1,30 @@
+Which two use cases require a partial copy or full sandbox?
+Choose two answers
+A. Scalability Testing
+B. Development Testing
+C. Quality Assurance Testing 
+D. Batch Data Testing
+
+Answers: <Put answers here>
+Explanation: <Put explanation here>
+
+In the Lightning Component framework, where is client-side controller logic contained?
+Choose one answer
+A. Apex
+B. Visualforce 
+C. HTML
+D. JavaScript
+
+Answers: <Put answers here>
+Explanation: <Put explanation here>
+
+A developer creates a method in an Apex class and needs to ensure that errors are handled properly. Which three should the developer use?
+Choose three answers
+A. ApexPages.addErrorMessage()
+B. A custom exception
+C. .addError()
+D. Database.handleException()
+E. A try/catch construct
+
+Answers: <Put answers here>
+Explanation: <Put explanation here>

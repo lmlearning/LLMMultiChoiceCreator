@@ -1,0 +1,200 @@
+
+
+  Learning Objectives
+
+After completing this unit, you'll be able to:
+
+  Configure Lightning web component files for display in an org.
+  Deploy your files to an org.
+  Verify component behavior in an org environment.
+
+
+  Step up to an Org
+
+In this unit, we develop a Lightning web component using Visual Studio Code with the Salesforce extension. We deploy the files to an org and build an app to use your component.
+
+  What You Need
+
+As stated in the first unit, you need some familiarity with Salesforce DX to continue. To complete this unit, you need:
+
+  Visual Studio Code(VS Code) with the Salesforce Extension Pack
+  Salesforce CLI
+  Dev Hub enabled org
+  My Domain deployed to users in your Dev Hub enabled org (Playground orgs created within Trailhead have My Domain deployed for you. If you associated a Developer Edition org with your Trailhead account, enable and deploy My Domain.)
+
+To meet these requirements, complete the Quick Start: Lightning Web Components project. Enable Dev Hub and deploy My Domain from the Setup menu in your org, if they're not already configured.
+
+  Set Up Lightning Web Component Files for Use in an Org
+
+You're going to create the bike component discussed in the Create Lightning Component unit and push it to your org.
+
+  
+    
+      
+        
+        
+          
+            We're not defining any styling of our own, so we don't need a CSS file.
+          
+        
+      
+    
+  
+
+The files you need to push a component to an org:
+
+  bikeCard.html
+  bikeCard.js
+  bikeCard.js-meta.xml
+
+Here's the steps in VS Code.
+
+  Create a project by selecting SFDX: Create Project from the Command Palette in VS Code. Accept the standard template and give it the project name bikeCard.
+  Under force-app/main/default, right-click the lwc folder and select SFDX: Create Lightning Web Component. 
+
+  Enter bikeCard for the name of the new component.
+  Press Enter and then press Enter again to accept the default force-app/main/default/lwc.
+  You see the following in VS Code under \force-app\main\default\lwc\bikeCard:  Lightning web components follow web standards. The HTML standard recommends that multi-word custom element names contain a hyphen. However, the Salesforce platform doesn't allow hyphens in the component folder or file names. So we use camelCase naming conventions here.
+  Copy and replace the contents for the bikeCard.html, bikeCard.js, and bikeCard.js-meta.xml files.
+    bikeCard.html
+&lt;template&gt;
+  &lt;div&gt;
+    &lt;div&gt;Name: {name}&lt;/div&gt;
+    &lt;div&gt;Description: {description}&lt;/div&gt;
+    &lt;lightning-badge label={material}&gt;&lt;/lightning-badge&gt;
+    &lt;lightning-badge label={category}&gt;&lt;/lightning-badge&gt;
+    &lt;div&gt;Price: {price}&lt;/div&gt;
+    &lt;div&gt;&lt;img src={pictureUrl}/&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/template&gt;Copy
+    bikeCard.js
+import { LightningElement } from 'lwc';
+export default class BikeCard extends LightningElement {
+  name = 'Electra X4';
+  description = 'A sweet bike built for comfort.';
+  category = 'Mountain';
+  material = 'Steel';
+  price = '$2,700';
+  pictureUrl = 'https://s3-us-west-1.amazonaws.com/sfdc-demo/ebikes/electrax4.jpg';
+}Copy
+    bikeCard.js-meta.xml
+&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
+    &lt;!-- The apiVersion may need to be increased for the current release --&gt;
+    &lt;apiVersion&gt;52.0&lt;/apiVersion&gt;
+    &lt;isExposed&gt;true&lt;/isExposed&gt;
+    &lt;masterLabel&gt;Bike Card&lt;/masterLabel&gt;
+    &lt;targets&gt;
+        &lt;target&gt;lightning__AppPage&lt;/target&gt;
+        &lt;target&gt;lightning__RecordPage&lt;/target&gt;
+        &lt;target&gt;lightning__HomePage&lt;/target&gt;
+    &lt;/targets&gt;
+&lt;/LightningComponentBundle&gt;Copy
+  
+  Save your files.
+
+
+  The Component Configuration File
+
+The file we haven't covered yet is the component configuration file with the extension .js-meta.xml. This file provides metadata for Salesforce, including the design configuration for components intended for use in Lightning App Builder.
+
+We haven't covered configuration files yet, because we've been playing in WebComponents.dev. Now that you're going to start using the content within an org, you must include a configuration file.
+Notice that the ebikes repo components all have this configuration file. Here's an example from the ebikes repo:&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata"&gt;
+    &lt;apiVersion&gt;52.0&lt;/apiVersion&gt;
+    &lt;isExposed&gt;true&lt;/isExposed&gt;
+    &lt;masterLabel&gt;Product Card&lt;/masterLabel&gt;
+    &lt;targets&gt;
+        &lt;target&gt;lightning__AppPage&lt;/target&gt;
+        &lt;target&gt;lightning__RecordPage&lt;/target&gt;
+        &lt;target&gt;lightning__HomePage&lt;/target&gt;
+        &lt;target&gt;lightningCommunity__Page&lt;/target&gt;
+    &lt;/targets&gt;
+    &lt;targetConfigs&gt;
+        &lt;targetConfig targets="lightning__RecordPage"&gt;
+            &lt;objects&gt;
+                &lt;object&gt;Product__c&lt;/object&gt;
+            &lt;/objects&gt;
+        &lt;/targetConfig&gt;
+    &lt;/targetConfigs&gt;
+&lt;/LightningComponentBundle&gt;Copy
+Required:
+
+  
+apiVersion binds the component to a Salesforce API version.
+  
+isExposed ( true or false) makes the component available from other namespaces. Only set this to true to make a Lightning component usable in these specific cases:
+    
+      From a managed package in Aura
+      From Lightning App Builder in another org
+    
+  
+
+Optional: 
+
+  
+targets specify which types of Lightning pages the component can be added to in the Lightning App Builder.
+  
+targetConfigs let you specify behavior specific to each type of Lightning page, including things like which objects support the component.
+
+See the documentation for the full list of supported syntax.
+
+  Displaying a Component in an Org
+
+You have two options for displaying a Lightning web component in the UI.
+
+  Set the component to support various flexipage types (home, record home, and so on) then add it to a flexipage using the Lightning App Builder. This is the simplest approach and the one you follow in this unit.
+  You can also create a tab which points to an Aura component containing your Lightning web component. You can see the required pieces in the repo.
+      Wrapper Components
+      Tabs
+      Visibility Settings
+      Default application configuration file
+    
+  
+
+
+  Deploy Your Files
+
+Now, you need to deploy the component files to your Dev Hub enabled org.
+
+  Authenticate with your Dev Hub org using SFDX: Authorize an Org from the Command Palette in VS Code. When prompted, accept the Project Default and press Enter to accept the default alias. If prompted to allow access, click Allow.
+  Right-click on the default folder and select SFDX: Deploy this Source to Org.
+
+
+  Create a New Page for Your Component
+
+Since we set up our component configuration file to enable the use of the component in Lightning App Builder, use the UI to create an app and add your component to it.
+
+  To open your org, use SFDX: Open Default Org from the Command Palette in VS Code.
+  In Setup, enter Lightning App Builder in the Quick Find box and then select Lightning App Builder.
+  Click New.
+  Select App Page and click Next.
+  Give it the label Bike Card and click Next.
+  Select One Region and click Finish.
+  In Lightning App Builder, scroll down the Components list until you see your Bike Card component. 
+
+Now you can drag it onto the page. Save the page, Activate it, and the Bike Card component shows up on the assigned page.
+
+  Drag your Bike Card component to the top of the page layout until the bike appears.
+  Click Save.
+  Click Activate.
+  Keep Activate for all users selected. And, optionally, change the name or icon for your app.
+  Click Save. You're asked to add your page to navigation menus, but you don't need to. You can still get to your page in this environment.
+  Click Finish.
+  Click Back in the upper left corner to exit the Lightning App Builder.
+  From the App Launcher (), find and select Bike Card.
+  Open it and see your component working in the UI. 
+
+
+There you go, a shiny new bike. You've pushed a component to an org, seen it on the page, and can verify it in the UI.
+In the next unit, you build an interactive component with event handling and deploy it to your org for testing.
+
+  Resources
+
+
+  Salesforce DX Developer Guide: Project Setup
+  Salesforce Help: Lightning App Builder
+  Lightning Web Components Dev Guide: Component Configuration Tags
+  Trailhead: Org Development Model
+
+

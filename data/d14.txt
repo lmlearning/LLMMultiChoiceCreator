@@ -1,0 +1,123 @@
+Test and Deploy Changes
+
+Learning Objectives
+After completing this unit, you’ll be able to:
+Convert your source to the proper format to deploy to production.
+Explain the commands used to deploy changes to your org.
+Describe how to speed up deployments with Quick Deploy.
+Create the Release Artifact
+Now that they’ve finished their development tasks, Juan and Ella move their changes to an environment they share with the rest of the development team. They transition to the build release phase to integrate their changes in a Developer Pro sandbox.
+
+After they’re done with these tests, Juan builds the final release artifact, the metadata source that contains all their changes, and they perform user-acceptance testing in a Full sandbox. Juan and Ella run a final verification to make sure that everything looks good. Finally, they plan and execute the deployment to production.
+
+Pull the Changes from the Repo
+Juan knows the source of truth (all the changes for this release) now lives in their GitHub repo.
+
+In VS Code, click the Source Control icon (1). Pull all changes from the Git repo by 1) click Source Control icon, 2) click More Actions icon, and then 3) select Pull from.
+Click the More Actions icon (2), then select Pull from (3).
+Select origin.
+The repository contains the new custom object, custom field, and triggers. All of Ella’s and Juan’s changes are here.The repository displays the language-courses project structure. The new custom object and custom field appear in force-app/main/default/objects, and the new trigger appears in force-app/main/default/triggers.
+Authorize the Developer Pro Sandbox
+Note
+If you’re following along, sign up for a Developer Edition org or Trailhead playground to use in place of the Developer Pro sandbox.
+
+In VS Code, log in to the Developer Pro sandbox. Select SFDX: Authorize an Org.
+Select Sandbox for the login URL (test.salesforce.com).
+Enter an alias for the sandbox, for example, dev_pro_sandbox.
+Log in with the sandbox username and password.
+Build the Release Artifact
+Juan’s first task is to build the release artifact so he can deploy the changes to the Developer Pro sandbox. The Zephyrus repo contains the components in DX source format, a granular, decomposed file format to facilitate team development.
+
+First, Juan converts the source that he wants to deploy to metadata format, the format required for deploying to an org using the force:mdapi command. He uses a terminal or command window to run Salesforce CLI commands to convert the source and build the release artifact.
+
+From a command window, make sure you’re in the Salesforce DX project directory.
+On the command line, view the help for the source:convert command.
+sfdx force:source:convert --help
+The --help tells Juan the format for the command. He indicates in which directory the source exists, and where to put the converted source. He then runs the command to build the .zip artifact.
+Run the source:convert command and create an archive of the output:
+sfdx force:source:convert --rootdir force-app --outputdir tmp_convert
+Create the .zip file of your changes:For Windows:
+jar -cfM winter19.zip tmp_convert
+For Unix/Linux:
+zip -r winter19.zip tmp_convert
+For Mac:
+zip -r -X winter19.zip tmp_convert
+Delete the output directory, tmp_convert. You can remove it quickly on the command line, or use Windows Explorer or Finder if you prefer.For Windows:
+rmdir /s tmp_convert
+For Mac/Unix/Linux:
+rm -r tmp_convert
+Test the release artifact in the Developer Pro sandbox.
+The .zip file is the release artifact. The command also creates a manifest in the output directory (package.xml). The manifest indicates what changes to include in the build artifact.
+
+Note
+If you’re following along, your journey ends here. The next steps require the test class, TestLanguageCourseTrigger, which is beyond the scope of this module.
+
+Why Should I Use mdapi:deploy to Deploy My Changes from This Point Forward?
+The force:source:deploy command is meant for development use cases when you are interacting with a sandbox for development and local testing. The command is not transactional and attempts to deploy all components. If any change in your project has errors but other changes are valid, the command deploys all changes that are valid and compile. Those changes that can’t compile are not deployed, but the overall command completes successfully.
+
+Instead Juan uses the Salesforce CLI force:mdapi:deploy command to perform integration testing and staging, and then deployment to production. If any component has errors, the command rolls back the entire deployment. This transactional process maintains the integrity of your staging and production environments.
+
+Test the Release Artifact in the Test (Partial) Sandbox
+Juan once again uses a command window or terminal to run a Salesforce CLI command to deploy the changes to the test sandbox. Juan deploys his changes using a new command, force:mdapi:deploy.
+
+Authorize to the Partial sandbox.
+Make sure you’re in the Salesforce DX project directory.
+On the command line, view the help for the deploy command.
+sfdx force:mdapi:deploy --help 
+The --help tells Juan the format of the command, and which parameters to include.
+Run the deploy command that mimics what you’ll deploy to production:
+sfdx force:mdapi:deploy --zipfile winter19.zip --targetusername partial-sandbox \
+--testlevel RunSpecifiedTests --runtests TestLanguageCourseTrigger
+Run your UI tests, such as selenium tests, if needed.
+Open the sandbox:
+sfdx force:org:open --targetusername partial-sandbox
+Perform user-acceptance tests.
+At this stage in the process, Juan cares only about the tests related to the application or changes being deployed. He runs only the tests for the code that is in the deployment artifact.
+
+If Juan’s testing passes, he moves to the test release phase, where he conducts regression tests in the staging sandbox.
+
+Test the Release Artifact in the Staging (Full) Sandbox
+If Juan makes no changes based on the integration testing, the next step is to stage the changes in a Full sandbox. Juan follows a similar process to deploy the changes to the Full sandbox. This phase includes regression testing and mimics how Juan will release the changes to production.
+
+Because Juan doesn’t find any errors during the test phase, he uses the same artifact (.zip file). If he found errors during the test phase, he’d fix them and create a new release artifact.
+
+First he runs a regression analysis by doing a check-only deploy to the org that executes all tests. After he runs all the regression tests, he runs a quick deploy to mimic exactly the steps he’ll take to deploy to production. He does this all using the CLI.
+
+By validating the components successfully in the staging environment, Juan has a shorter maintenance window that blocks user access to the system when the customizations get deployed to production.
+
+Authorize to the Full sandbox.
+Run all local (regression) tests to validate the deployment without saving the components in the target org. A validation enables you to verify the results of tests that would be executed in a deployment, but doesn’t commit any changes.
+sfdx force:mdapi:deploy --checkonly --zipfile winter19.zip --targetusername full-sandbox \
+--testlevel RunLocalTests
+Test the actual production deployment steps in the staging sandbox. Juan sets up the same quick deploy that he plans to execute against the production org.
+sfdx force:mdapi:deploy --checkonly --zipfile winter19.zip --targetusername full-sandbox \
+--testlevel RunSpecifiedTests --runtests TestLanguageCourseTrigger
+This command returns a job ID that you’ll need to reference in the quick deploy.
+Next, he tests the quick deploy using the job ID returned in the previous step.
+sfdx force:mdapi:deploy --targetusername full-sandbox --validateddeployrequestid jobID
+Release to Production
+Juan and his team are in the home stretch. Now that all their tests have passed in the Full sandbox, they are ready to deploy to production. The Sales team is very excited to see their vision become a reality.
+
+Juan checks the deployment run list and sees that he doesn’t have any pre-deployment tasks to complete. He’s good to go. Once he runs the quick deploy, he has 10 days to perform the deployment to production. Juan sets up the quick deploy for the production org to guarantee there aren’t any issues caused by differences with the staging sandbox. To minimize customer impact, he runs the check-only quick deploy on one evening, and then deploys to production the next evening.
+
+Authorize to the production org.
+Set up the quick deploy:
+sfdx force:mdapi:deploy --checkonly --zipfile winter19.zip --targetusername production-org \
+--testlevel RunSpecifiedTests --runtests TestLanguageCourseTrigger
+This command returns a job ID that you’ll need to reference in the quick deploy.
+Run the quick deploy:
+sfdx force:mdapi:deploy --targetusername production-org --validateddeployrequestid jobID
+Once the tests are run, Juan verifies that all the Apex tests have passed, and that the tests cover at least 75% of the code being deployed.
+Open the production org.
+Perform Post-Deployment Tasks Listed in Deployment Run List
+Juan looks at the deployment run list again to review which post-deployment tasks to perform in the production org.
+
+Stage (Pre- or Post-)	Entity/Component	Notes	Steps
+Pre-deployment	N/A	No tasks required	N/A
+Post-deployment	Sales profile	Update permissions so Sales team can view custom object and custom field.	In Setup, edit the Sales team profile. Provide Read access for Language Course Instructors.
+Another Successful Rollout!
+Calvin does a quick sanity check in the production org. He adds an instructor to one of the courses and validates that the notification email arrives in his inbox.
+
+With all changes reflected in the source control system, the team can provide Calvin with a definitive list of changes to document in the release notes.
+
+Calvin tells the Sales team that the new notification feature is ready to go. He congratulates Ella and Juan on the successful rollout of a key feature that will help the Zephyrus Sales team stay informed with the latest course information. He’s pleased that changes are now stored in a repository, and sees the benefits the repo provides as the team takes on more work.

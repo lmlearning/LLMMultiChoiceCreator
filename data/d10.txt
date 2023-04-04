@@ -1,0 +1,49 @@
+Build Search for Common Use Cases
+
+Learning Objectives
+After completing this unit, you’ll be able to:
+
+Describe how to search within a single object.
+Explain how to search within multiple objects.
+Describe how to search within a custom object.
+On the Job at Cloud Kicks
+Let’s say you’re the new all-star developer of the exciting company Cloud Kicks. It makes ultra-comfy, stylish, and eco-friendly custom sneakers that are a hit with professional runners and weekend warriors alike.
+
+You’re tasked with creating a customer-facing online knowledge base and an internal product website for Cloud Kicks employees. All the data comes from the Cloud Kicks Salesforce org. Looks like a job for a customized search solution, doesn’t it? Using this scenario, let’s go through a few common use cases for customized search solutions. We’ll talk about why you would use a particular use case and then give some examples.
+
+Search Within a Single Object
+Cloud Kicks is a growing startup, and marketing is working hard to get the word out. It's started several campaigns and has tracked them through Salesforce. Marketing and sales have requested a way to search only campaigns on the internal product website that you’re working on. Single object searches are best used when users need a quick way to search through one record type because they don’t want to be bogged down sifting through records that don’t apply to them.
+
+To search within a single object using SOSL, simply specify that object in the request. It’s just that easy.
+
+FIND {term} RETURNING ObjectTypeName
+In the example, term is what the user enters. ObjectTypeName limits search results to include only the sObject specified. So if the user wants to find the March 2016 email campaign, the request looks like:
+
+FIND {march 2016 email} RETURNING Campaign
+We’ll get into all the cool stuff you can do with RETURNING and how to refine your search for the best results in the next unit.
+
+Search Within Multiple Objects
+Cloud Kicks loves its customers. It wants to build a one-stop-shop for users to ask questions and share information on its website. There are multiple types of information included: videos, articles, questions, and PDFs. But users don’t really care what type of content is presented. They only care that they get the information they need—and fast. That’s what makes the multiple object search beneficial: You get to search through multiple objects at the same time because the type of record doesn’t matter to the user. Or, perhaps the user actually wants to see multiple object types in results.
+
+Luckily, adding another object is super simple in SOSL. Just add a comma-separated list.
+
+FIND {term} RETURNING ObjectTypeName1, ObjectTypeName2, ObjectTypeNameYouGetTheIdea
+Going back to our scenario, a Cloud Kicks customer is wondering if any shoes are made of recycled materials. You set up the online knowledge base search so that multiple objects matching the terms are returned in the results.
+
+FIND {recycled materials} RETURNING Product2, ContentVersion, FeedItem
+Remember, if you don’t specify an object in the RETURNING element, it doesn’t show up in the results.
+
+Search Within Custom Objects
+Salesforce includes numerous standard objects available to customers. But Cloud Kicks is all about custom shoes, so it makes sense that it also needs custom objects. Of specific interest to you is the newest custom object, Merchandise. This object contains information about the style, ID, color, materials, name, and price of all that Cloud Kicks has to offer. Many people inside Cloud Kicks need to access this information, including support, sales, and shipping.
+
+For the internal product website you’re building, you’re adding a search box that only searches the Merchandise custom object. There’s no fancy way to specify custom objects in a SOSL search. Include the sObject name like any other standard object, and append a __c suffix.
+
+FIND {pink hi\-top} RETURNING Merchandise__c
+SOQL
+We’ve gone on about SOSL, but what SOQL? Well, you use SOQL for single object searches, when you know the fields to be searched, when the search term is an exact match for the field (no partial or out-of-order matches), when you need number, date, or checkbox field data, and when you’re looking for just a few results. (For a full list of when to use SOQL, refer to the previous unit.)
+
+Looking at the previous common use cases in this module, you might have noticed some red flags for using SOQL. For example:
+
+Single object search—SOQL works when you know which field the data resides in. Because we didn’t specify the field for march 2016 email, a SOSL search is preferred over SOQL. In general, if the query doesn’t specify a target field to search, SOSL works.
+Multiple object search—Because you can only retrieve data from multiple objects that are related to one another, the multiple object search in SOQL is limited. In our scenario, the objects were unrelated, so SOSL it is.
+Custom object search—As with a single object search, you could search through custom objects in SOQL fine. However, we didn’t specify in which field the data resides for our search term pink hi-top. In addition, SOQL searches against the database, not the index. So, let’s say that the record actually included pink sneaker hi-top. SOQL wouldn’t be able to return the right results.
