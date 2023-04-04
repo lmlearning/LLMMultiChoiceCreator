@@ -2,6 +2,9 @@
 
 This project consists of three Python scripts that work together to classify, generate, and write out multiple choice questions based on a set of input documents and learning goals. The scripts use the GPT-3.5-turbo model from the OpenAI API for natural language processing tasks.
 
+![Overview Diagram](https://github.com/lmlearning/LLMMultiChoiceCreator/blob/main/mcqgen.png)
+
+
 ## Requirements
 
 * Python 3.6 or higher
