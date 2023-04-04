@@ -66,15 +66,15 @@ This script writes the generated multiple choice questions to an output file in 
 
 Suppose we have the following files:
 
-* `documents/`: A directory containing plain text files with the input documents.
+* `data/`: A directory containing plain text files with the input documents.
 * `learning_goals.txt`: A file containing the learning goals.
 * `question_format.txt`: A file containing the question format.
 
 To generate multiple choice questions, run the following commands:
 
 ```bash
-python classify_document_paragraphs.py documents learning_goals.txt database.db
-python generate_questions.py documents learning_goals.txt question_format.txt database.db
+python classify_document_paragraphs.py data learning_goals.txt database.db
+python generate_questions.py data learning_goals.txt question_format.txt database.db
 python write_questions.py database.db pdf questions.pdf
 ```
 
